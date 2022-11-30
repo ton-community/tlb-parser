@@ -10,8 +10,8 @@ TLB {
   // Override Ohm's built-in definition of space.
   space := whitespace | lineTerminator | comment
 
-  whitespace
-    = "\t"
+  whitespace =
+    | "\t"
     | "\x0B"    -- verticalTab
     | "\x0C"    -- formFeed
     | " "
@@ -41,7 +41,11 @@ TLB {
 
   // Primitives
   number = digit+
-  builtins = "#<" | "#<=" | "##" | "#"
+
+  // Builtins
+  binary_builtins = "#<=" | "#<" | "##"
+  unary_builtins = "#"
+  field_builtins = "#" | "Type"
 
   // ----------
   // Base rules
@@ -53,50 +57,95 @@ TLB {
   // ~~~~~~~~~~~~
   Constructor = ConstructorName
   ConstructorName = ("_" | identifier) ConstructorTag?
-  ConstructorTag
-  	= "$" (binaryDigit+ | "_")
-    | "#" (hex | "_")
+  ConstructorTag =
+  	| "$" ("_" | binaryDigit+)  -- binary
+    | "#" ("_" | hex)           -- hex
 
   // Fields
   // ~~~~~~
   Fields = FieldDefinition*
-  FieldDefinition = FieldImplicitDef | FieldNamedDef | CellRefExpr | ParenExpr | CondExpr
-  FieldImplicitDef = "{" (FieldImplicit | Expression) "}"
-  FieldImplicit = identifier ":" ("#" | "Type")
-  FieldNamedDef = identifier ":" CondExpr
+  FieldDefinition =
+    | FieldBuiltinDef
+    | FieldCurlyExprDef
+    | FieldAnonymousDef
+    | FieldNamedDef
+    | FieldExprDef
+
+  FieldBuiltinDef = "{" identifier ":" field_builtins "}"
+  FieldCurlyExprDef = "{" CurlyExpression "}"
+
+  // Technically, it is used here, because '_:^[ max_limit:int64 ]' is a thing.
+  // It is not just a regular Field definition. Can be joined with 'CellRef'?
+  FieldAnonymousDef = "^"? "[" Fields "]"
+  FieldNamedDef = identifier ":" (FieldAnonymousDef | FieldExprDef)
+  FieldExprDef = CondExpr
 
   // Combinators
   // ~~~~~~~~~~~
-  Combinator = identifier TypeExpr*
+  Combinator = identifier SimpleExpr*
 
   // Expressions
   // ~~~~~~~~~~~
-  Expression = CompareExpr
 
-  CompareExpr
-    = MathExpr "<=" MathExpr  -- lte
+  // First come the complex rules we only use to define fields.
+  // The line between fields definition and expressions is blury at this point.
+  CurlyExpression = CompareExpr
+  CondExpr =
+    | CondDotAndQuestionExpr
+    | CondQuestionExpr
+    | TypeExpr
+
+  CondDotted = TypeExpr "." number
+  CondDotAndQuestionExpr = ( CondDotted | Parens<CondDotted> ) "?" TypeExpr
+  CondQuestionExpr = TypeExpr "?" TypeExpr
+
+  // Generic rule to allow parens around some expressions:
+  Parens<expr> = "(" expr ")"
+
+  // Compares:
+  CompareExpr =
+    | MathExpr "<=" MathExpr  -- lte
     | MathExpr ">=" MathExpr  -- gte
     | MathExpr "!=" MathExpr  -- ne
     | MathExpr "=" MathExpr   -- eq
     | MathExpr "<" MathExpr   -- lt
     | MathExpr ">" MathExpr   -- gt
+    | Parens<CompareExpr>     -- parens
     | MathExpr                -- noop
 
+  // Base rule for field defining expressions:
+  TypeExpr =
+    | CellRefExpr
+    | BuiltinExpr
+    | CombinatorExpr
+    | SimpleExpr
+    | Parens<TypeExpr>
+
+  // Math:
   MathExpr = MulExpr ("+" MulExpr)*
-  MulExpr = PrimitiveExpr ("*" PrimitiveExpr)*
+  MulExpr = SimpleExpr ("*" SimpleExpr)*
 
-  // Misc
-  // ~~~~
-  PrimitiveExpr = CondExpr+
-  CondExpr = NestedTypeExpr CondTypeExpr?
-  NestedTypeExpr = TypeExpr ("." TypeExpr)?
-  CondTypeExpr = "?" TypeExpr
+  // TypeExpr's items:
+  CellRefExpr = "^" ( CellRefInner | Parens<CellRefInner> )
+  CellRefInner = CombinatorExpr | identifier
 
-  TypeExpr = "~"? ( AnnonymousConstructorExpr | CellRefExpr | ParenExpr | RefExpr )
-  AnnonymousConstructorExpr = "[" Fields "]"
-  CellRefExpr = "^" TypeExpr
-  ParenExpr = "(" Expression ")"
-  RefExpr = builtins | identifier | number
+  BuiltinExpr = BuiltinBinary | BuiltinUnary
+  // This needs extra 'Parens' because of '(##)' expr:
+  BuiltinBinary = "(" ( binary_builtins | Parens<binary_builtins> ) RefExpr ")"
+  BuiltinUnary = unary_builtins
+
+  // It is different from 'Combinator' only in the quantity part:
+  // we always need at least one argument here and it can be complex.
+  CombinatorExpr = "(" identifier TypeExpr+ ")"
+
+  SimpleExpr =
+    | NegateExpr
+    | MathExpr
+    | RefExpr
+    | Parens<SimpleExpr>
+
+  NegateExpr = "~" SimpleExpr
+  RefExpr = identifier | number
 }
 `
 

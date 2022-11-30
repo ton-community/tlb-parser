@@ -1,0 +1,33 @@
+# Parens around different parts:
+
+- case: parens around different parts
+  code: |
+    temp0 a:(## 1) p:^(BlkPrevInfo a) = B0;
+    temp1 a:((##) 1) p:^(BlkPrevInfo a) = B1;
+    temp2 a:(## 1) p:^((BlkPrevInfo a)) = B2;
+    temp3 a:((## 1)) p:^(BlkPrevInfo a) = B3;
+    temp4 a:(## 1) p:(^(BlkPrevInfo a)) = B3;
+
+    tempall a:((((##) 1))) p:(^((BlkPrevInfo a))) = BAll;
+
+- case: parens in curly
+  code: |
+    a1 t:(## 16) m:(## 16) { (m <= t) } { m >= 1 } = A1;
+    a2 t:(## 16) m:(## 16) { (m <= t) } { (m >= 1) } = A2;
+    a3 t:(## 16) m:(## 16) { ((m <= t)) } { (((m >= 1))) } = A2;
+
+- case: parens in `+` math
+  code: |
+    temp1 {n:#} = Temp1 (n + 1 + 1);
+    temp2 {n:#} = Temp2 (((n) + 1 + 1));
+    temp3 {n:#} = Temp3 ((n + 1) + 1);
+    temp4 {n:#} = Temp4 (n + (1 + 1));
+
+- case: parens in `+` math
+  code: |
+    temp1 {n:#} = Temp1 (n * 2 + 1);
+    temp2 {n:#} = Temp2 ((n * 2) + 1);
+
+    // This is not allowed in C++, but allowed in this version:
+    // TODO: add semantic validation
+    // temp3 {n:#} = Temp3 (n * (2 + 1));

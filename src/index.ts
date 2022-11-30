@@ -1,10 +1,20 @@
-import type { MatchResult } from 'ohm-js'
+import type { Grammar, MatchResult } from 'ohm-js'
 
-import { buildGrammar } from './intermediate'
+import type { Program } from './ast'
+import { buildGrammar, buildAST } from './intermediate'
 
-export default function parse (input: string): MatchResult {
-  const grammar = buildGrammar()
-  // TODO: build `ast` from intermediate repr
-  // for now, just return it.
+
+export function parse (
+  input: string,
+  grammar: Grammar | undefined = undefined,
+): MatchResult {
+  if (grammar === undefined) {
+    grammar = buildGrammar()
+  }
+
   return grammar.match(input)
+}
+
+export function ast (input: string): Program {
+  return buildAST(input, buildGrammar())
 }
