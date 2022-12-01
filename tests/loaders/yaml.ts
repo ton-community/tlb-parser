@@ -9,14 +9,12 @@ interface OneLinerTestCase {
   code: string
   error: string | undefined
   errorStart: string | undefined
+  skip: boolean
 }
 
-export function loadYamlCases(
-  fixturesDir: string,
-  filename: string,
-): OneLinerTestCase[] {
+export function loadYamlCases(...pathParts: string[]): OneLinerTestCase[] {
   const cases = yaml.load(fs.readFileSync(
-    path.resolve(fixturesDir, filename),
+    path.resolve(...pathParts),
     'utf-8',
   )) as OneLinerTestCase[]
 

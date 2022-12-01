@@ -1,4 +1,0 @@
-// ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y
-//          = HashmapAugE n X Y;
-
-ahme_root$1 root:^(HashmapAug n X Y) = HashmapAugE;

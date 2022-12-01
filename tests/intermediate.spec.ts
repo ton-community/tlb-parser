@@ -5,13 +5,14 @@ import { parse } from '../src'
 import { loadYamlCases } from './loaders/yaml'
 
 const fixturesDir = path.resolve(__dirname, 'fixtures')
+const maybe = (condition: Boolean) => condition ? test : test.skip
 
-describe('parsing', () => {
+describe('parsing into intermediate representation using grammar', () => {
   test('block.tlb can be parsed', () => {
     expect.hasAssertions()
 
     const input = fs.readFileSync(
-      path.resolve(fixturesDir, 'valid', 'block.tlb'),
+      path.resolve(fixturesDir, 'tlb', 'block.tlb'),
       'utf-8',
     )
     const parsed = parse(input)
@@ -20,8 +21,14 @@ describe('parsing', () => {
     expect(parsed.succeeded()).toBe(true)
   })
 
-  for (let caseDef of loadYamlCases(fixturesDir, 'invalid-one-liners.yml')) {
-    test(`Generated invalid example: ${caseDef.case}`, () => {
+  for (
+    let caseDef of loadYamlCases(
+      fixturesDir,
+      'grammar',
+      'invalid-one-liners.yml',
+    )
+  ) {
+    maybe(!caseDef.skip)(`Generated invalid example: ${caseDef.case}`, () => {
       expect.hasAssertions()
 
       const parsed = parse(caseDef.code)
@@ -35,7 +42,13 @@ describe('parsing', () => {
     })
   }
 
-  for (let caseDef of loadYamlCases(fixturesDir, 'valid-one-liners.yml')) {
+  for (
+    let caseDef of loadYamlCases(
+      fixturesDir,
+      'grammar',
+      'valid-one-liners.yml',
+    )
+  ) {
     test(`Generated valid example: ${caseDef.case}`, () => {
       expect.hasAssertions()
 

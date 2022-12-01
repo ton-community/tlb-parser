@@ -100,3 +100,15 @@
     unit$_ = (Unit);
   errorStart: |
     Line 1, col 10: expected
+
+# Skipping this test for now, because I cannot make it work.
+- case: parens around combinator args
+  code: |
+    temp {n:#} x:(Unary ~n) = Temp (~(n + 1));
+  skip: true
+
+- case: parens on the left of `*`
+  code: |
+    temp3 {n:#} = Temp3 (n * (2 + 1));
+  errorStart: |
+    Line 1, col 29: expected

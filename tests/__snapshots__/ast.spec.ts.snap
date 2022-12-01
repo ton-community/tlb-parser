@@ -1,0 +1,447 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ast generation Generated ast example: Anonymous fields with cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "name": "VmGasLimits",
+      },
+      "contructor": Constructor {
+        "name": "gas_limits",
+        "tag": "#_",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "name": "int64",
+          },
+          "name": "remaining",
+        },
+        FieldAnonymousDef {
+          "fields": [
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "max_limit",
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "cur_limit",
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "credit",
+            },
+          ],
+          "isRef": true,
+          "name": null,
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Anonymous fields with named cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "name": "VmGasLimits",
+      },
+      "contructor": Constructor {
+        "name": "gas_limits",
+        "tag": "#_",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "name": "int64",
+          },
+          "name": "remaining",
+        },
+        FieldAnonymousDef {
+          "fields": [
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "max_limit",
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "cur_limit",
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "credit",
+            },
+          ],
+          "isRef": true,
+          "name": "_",
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Anonymous fields without cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "name": "VmGasLimits",
+      },
+      "contructor": Constructor {
+        "name": "gas_limits",
+        "tag": "#_",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "name": "int64",
+          },
+          "name": "remaining",
+        },
+        FieldAnonymousDef {
+          "fields": [
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "max_limit",
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "cur_limit",
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "name": "int64",
+              },
+              "name": "credit",
+            },
+          ],
+          "isRef": false,
+          "name": null,
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "name": "HashmapAugE",
+      },
+      "contructor": Constructor {
+        "name": "ahme_root",
+        "tag": "$1",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": CombinatorExpr {
+              "args": [
+                NameExpr {
+                  "name": "n",
+                },
+                NameExpr {
+                  "name": "X",
+                },
+                NameExpr {
+                  "name": "Y",
+                },
+              ],
+              "name": "HashmapAug",
+            },
+          },
+          "name": "root",
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Different compare nodes 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "name": "TopBlockDescr",
+      },
+      "contructor": Constructor {
+        "name": "top_block_descr",
+        "tag": "#d5",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "name": "BlockIdExt",
+          },
+          "name": "proof_for",
+        },
+        FieldNamedDef {
+          "expr": CombinatorExpr {
+            "args": [
+              CellRefExpr {
+                "expr": NameExpr {
+                  "name": "BlockSignatures",
+                },
+              },
+            ],
+            "name": "Maybe",
+          },
+          "name": "signatures",
+        },
+        FieldNamedDef {
+          "expr": BuiltinOneArgExpr {
+            "arg": NumberExpr {
+              "num": 8,
+            },
+            "name": "##",
+          },
+          "name": "len",
+        },
+        FieldCurlyExprDef {
+          "expr": CompareExpr {
+            "left": NameExpr {
+              "name": "len",
+            },
+            "op": ">=",
+            "right": NumberExpr {
+              "num": 1,
+            },
+          },
+        },
+        FieldCurlyExprDef {
+          "expr": CompareExpr {
+            "left": NameExpr {
+              "name": "len",
+            },
+            "op": "<=",
+            "right": NumberExpr {
+              "num": 8,
+            },
+          },
+        },
+        FieldNamedDef {
+          "expr": CombinatorExpr {
+            "args": [
+              NameExpr {
+                "name": "len",
+              },
+            ],
+            "name": "ProofChain",
+          },
+          "name": "chain",
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Math with parens 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [
+          MathExpr {
+            "left": NameExpr {
+              "name": "n",
+            },
+            "op": "+",
+            "right": MathExpr {
+              "left": NumberExpr {
+                "num": 1,
+              },
+              "op": "+",
+              "right": NumberExpr {
+                "num": 1,
+              },
+            },
+          },
+        ],
+        "name": "ProofChain",
+      },
+      "contructor": Constructor {
+        "name": "chain_link",
+        "tag": "$_",
+      },
+      "fields": [
+        FieldBuiltinDef {
+          "name": "n",
+          "type": "#",
+        },
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": NameExpr {
+              "name": "Cell",
+            },
+          },
+          "name": "root",
+        },
+        FieldNamedDef {
+          "expr": CondExpr {
+            "condExpr": CellRefExpr {
+              "expr": CombinatorExpr {
+                "args": [
+                  NameExpr {
+                    "name": "n",
+                  },
+                ],
+                "name": "ProofChain",
+              },
+            },
+            "dotExpr": null,
+            "left": NameExpr {
+              "name": "n",
+            },
+          },
+          "name": "prev",
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Math without parens 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [
+          MathExpr {
+            "left": NameExpr {
+              "name": "n",
+            },
+            "op": "+",
+            "right": NumberExpr {
+              "num": 1,
+            },
+          },
+        ],
+        "name": "ProofChain",
+      },
+      "contructor": Constructor {
+        "name": "chain_link",
+        "tag": "$_",
+      },
+      "fields": [
+        FieldBuiltinDef {
+          "name": "n",
+          "type": "#",
+        },
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": NameExpr {
+              "name": "Cell",
+            },
+          },
+          "name": "root",
+        },
+        FieldNamedDef {
+          "expr": CondExpr {
+            "condExpr": CellRefExpr {
+              "expr": CombinatorExpr {
+                "args": [
+                  NameExpr {
+                    "name": "n",
+                  },
+                ],
+                "name": "ProofChain",
+              },
+            },
+            "dotExpr": null,
+            "left": NameExpr {
+              "name": "n",
+            },
+          },
+          "name": "prev",
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Simple fields 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [
+          NameExpr {
+            "name": "n",
+          },
+          NameExpr {
+            "name": "X",
+          },
+          NameExpr {
+            "name": "Y",
+          },
+        ],
+        "name": "HashmapAugE",
+      },
+      "contructor": Constructor {
+        "name": "ahme_empty",
+        "tag": "$0",
+      },
+      "fields": [
+        FieldBuiltinDef {
+          "name": "n",
+          "type": "#",
+        },
+        FieldBuiltinDef {
+          "name": "X",
+          "type": "Type",
+        },
+        FieldBuiltinDef {
+          "name": "Y",
+          "type": "Type",
+        },
+        FieldNamedDef {
+          "expr": NameExpr {
+            "name": "Y",
+          },
+          "name": "extra",
+        },
+      ],
+    },
+  ],
+  "parent": null,
+}
+`;

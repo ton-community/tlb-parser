@@ -53,7 +53,7 @@ export class Constructor extends ASTBase {
 
 export type FieldDefinition =
   | FieldBuiltinDef
-  | FieldImplicitDef
+  | FieldCurlyExprDef
   | FieldAnonymousDef
   | FieldNamedDef
   | FieldExprDef
@@ -71,7 +71,7 @@ export class FieldBuiltinDef extends Field {
   }
 }
 
-export class FieldImplicitDef extends Field {
+export class FieldCurlyExprDef extends Field {
   constructor(
     readonly expr: Expression,
   ) {
@@ -79,12 +79,22 @@ export class FieldImplicitDef extends Field {
   }
 }
 
-export class FieldAnonymousDef extends Field {}
+// TODO: I am not sure that `name` is allowed. Maybe it can only be `_`
+// See https://github.com/ton-blockchain/ton/issues/540
+export class FieldAnonymousDef extends Field {
+  constructor(
+    readonly name: string | null,
+    readonly isRef: boolean,
+    readonly fields: FieldDefinition[],
+  ) {
+    super()
+  }
+}
 
 export class FieldNamedDef extends Field {
   constructor(
     readonly name: string,
-    readonly expr: FieldAnonymousDef | FieldExprDef,
+    readonly expr: CondExpr | TypeExpr,
   ) {
     super()
   }
@@ -104,7 +114,7 @@ export class FieldExprDef extends Field {
 export class Combinator extends ASTBase {
   constructor(
     readonly name: string,
-    readonly exprs: TypeExpr[],
+    readonly args: TypeExpr[],
   ) {
     super()
   }
@@ -115,47 +125,93 @@ export class Combinator extends ASTBase {
 
 export abstract class Expression extends ASTBase {}
 
-export const CompOperator = ['<=', '>=', '!=', '=', '<', '>'] as const
-
-export class CompareExpr extends Expression {
-  // TODO: narrower type for `left` and `right`?
+// TODO: add validation that `dotExpr` cannot be set without `condExpr`
+export class CondExpr extends Expression {
   constructor(
-    readonly left: Expression,
-    readonly op: typeof CompOperator[number],
-    readonly right: Expression,
+    readonly left: TypeExpr,
+    readonly dotExpr: number | null,
+    readonly condExpr: TypeExpr,
   ) {
     super()
   }
 }
+
+export const CompareOperator = ['<=', '>=', '!=', '=', '<', '>'] as const
+
+export class CompareExpr extends Expression {
+  constructor(
+    readonly left: SimpleExpr,
+    readonly op: typeof CompareOperator[number],
+    readonly right: SimpleExpr,
+  ) {
+    super()
+  }
+}
+
+// TypeExpr
+
+export type TypeExpr =
+  | CellRefExpr
+  | BuiltinExpr
+  | CombinatorExpr
+  | SimpleExpr
+
+export class CellRefExpr extends Expression {
+  constructor(
+    readonly expr: Expression,
+  ) {
+    super()
+  }
+}
+
+export class BuiltinExpr extends Expression {}
+
+export const BuiltinOneArgOperators = ['#<=', '#<', '##'] as const
+
+export class BuiltinOneArgExpr extends BuiltinExpr {
+  constructor(
+    readonly name: typeof BuiltinOneArgOperators[number],
+    readonly arg: Reference,
+  ) {
+    super()
+  }
+}
+
+export const BuiltinZeroArgsOperators = ['#'] as const
+
+export class BuiltinZeroArgs extends BuiltinExpr {
+  constructor(
+    readonly name: typeof BuiltinZeroArgsOperators[number],
+  ) {
+    super()
+  }
+}
+
+export class CombinatorExpr extends Expression {
+  constructor(
+    readonly name: string,
+    readonly args: TypeExpr[],
+  ) {
+    super()
+  }
+}
+
+// SimpleExpr
+
+export type SimpleExpr =
+  | NegateExpr
+  | MathExpr
+  | Reference
 
 export const MathOperator = ['*', '+'] as const
 
 export class MathExpr extends Expression {
   // TODO: narrower type for `left` and `right`?
+  // TODO: use `SimpleExpr` and `number`?
   constructor(
-    readonly left: Expression,
+    readonly left: SimpleExpr,
     readonly op: typeof MathOperator[number],
-    readonly right: Expression,
-  ) {
-    super()
-  }
-}
-
-export class CondExpr extends Expression {
-  constructor(
-    readonly left: TypeExpr,
-    readonly dotExpr: TypeExpr | null,
-    readonly condExpr: TypeExpr | null,
-  ) {
-    super()
-  }
-}
-
-export class TypeExpr extends Expression {}
-
-export class CellRefExpr extends Expression {
-  constructor(
-    readonly expr: Expression,
+    readonly right: SimpleExpr,
   ) {
     super()
   }
@@ -169,7 +225,11 @@ export class NegateExpr extends Expression {
   }
 }
 
-export class NameExpr extends Expression {
+export class RefExpr extends Expression {}
+
+export type Reference = NameExpr | NumberExpr
+
+export class NameExpr extends RefExpr {
   constructor(
     readonly name: string,
   ) {
@@ -177,7 +237,7 @@ export class NameExpr extends Expression {
   }
 }
 
-export class NumberExpr extends Expression {
+export class NumberExpr extends RefExpr {
   constructor(
     readonly num: number,
   ) {

@@ -1,9 +1,9 @@
-import type { Node, TerminalNode } from 'ohm-js'
+import type { Node, TerminalNode, IterationNode } from 'ohm-js'
 
 import * as ast from './ast'
 
 export const rootNodes = {
-  Program(node: Node): any {
+  Program(node: IterationNode): any {
     return new ast.Program(
       node.children.map((child: Node) => child['root']()),
     )
@@ -19,11 +19,15 @@ export const rootNodes = {
 }
 
 export const constructorNodes = {
-  Constructor(node: Node): any {
-    return new ast.Constructor(
-      node.child(0).sourceString,
-      node.child(1).child(0)['Constructor'](),
-    )
+  Constructor(name: TerminalNode, tag: Node): any {
+    const nameValue = name.sourceString
+    let tagValue = null;
+
+    if (tag.numChildren !== 0) {
+      tagValue = tag.child(0)['Constructor']()
+    }
+
+    return new ast.Constructor(nameValue, tagValue)
   },
 
   ConstructorTag(node: Node): any {
@@ -33,7 +37,7 @@ export const constructorNodes = {
 }
 
 export const fieldNodes = {
-  Fields(node: Node): any {
+  Fields(node: IterationNode): any {
     return node.children.map((child: Node) => child['Field']())
   },
 
@@ -55,25 +59,51 @@ export const fieldNodes = {
     )
   },
 
-  FieldImplicitDef(
+  FieldCurlyExprDef(
     _lpar: TerminalNode,
-    field: Node,
+    expr: Node,
     _rpar: TerminalNode,
   ): any {
-    return new ast.FieldImplicitDef(field['Field']())
+    return new ast.FieldCurlyExprDef(expr['expr']())
+  },
+
+  FieldAnonymousDef(node: Node): any {
+    const {name, isRef, fields} = node['Field']()
+    return new ast.FieldAnonymousDef(name, isRef, fields)
   },
 
   FieldNamedDef(name: Node, _sep: TerminalNode, expr: Node): any {
-    return new ast.FieldNamedDef(name.sourceString, expr['Field']())
+    return new ast.FieldNamedDef(name.sourceString, expr['expr']())
   },
 
   FieldExprDef(node: Node): any {
     return new ast.FieldExprDef(node['expr']())
   },
+
+  // Helpers to parse complex anonymous fields:
+  FieldAnonRef(
+    ref: TerminalNode,
+    _lpar: TerminalNode,
+    fields: IterationNode,
+    _rpar: TerminalNode,
+  ) {
+    return {
+      'name': null,
+      'isRef': ref.numChildren !== 0,
+      'fields': fields.children.map((field: Node) => field['Field']()),
+    }
+  },
+
+  FieldNamedAnonRef(name: Node, _sep: TerminalNode, fields: Node) {
+    return {
+      ...fields['Field'](),
+      'name': name.sourceString,
+    }
+  },
 }
 
 export const combinatorNodes = {
-  Combinator(name: Node, exprs: Node): any {
+  Combinator(name: Node, exprs: IterationNode): any {
     return new ast.Combinator(
       name.sourceString,
       exprs.children.map((typeExpr: Node) => typeExpr['expr']()),
@@ -82,37 +112,83 @@ export const combinatorNodes = {
 }
 
 export const exprNodes = {
-  MathExpr(left: Node, ops: Node, rights: Node): any {
+  // Math
+
+  MathExpr(left: Node, ops: IterationNode, rights: IterationNode): any {
     return parseMath(left, ops, rights)
   },
 
-  MulExpr(left: Node, ops: Node, rights: Node): any {
+  MulExpr(left: Node, ops: IterationNode, rights: IterationNode): any {
     return parseMath(left, ops, rights)
   },
 
-  PrimitiveExpr(node: Node): any {
-    // Just unwrap it, temp rule:
-    console.log(node)
+  CompareExpr(node: Node): any {
     return node['expr']()
   },
 
-  CondExpr(
-    left: Node,
-    _dot: TerminalNode,
-    dotExpr: Node,
-    _cond: TerminalNode,
-    condExpr: Node,
-  ): any {
-    const leftExpr = left['expr']()
-    if (dotExpr.numChildren === 0 && condExpr.numChildren === 0) {
-      // This is not a `CondExpr`, passing through.
+  CompareOperatorExpr(left: Node, op: TerminalNode, right: Node): any {
+    return new ast.CompareExpr(
+      left['expr'](),
+      op.sourceString as any,
+      right['expr'](),
+    )
+  },
+
+  // Conditional types
+
+  CondExpr(expr: Node): any {
+    const {leftExpr, dotExpr, condExpr} = expr['expr']()
+    if (dotExpr === undefined && condExpr === undefined) {
       return leftExpr
     }
 
-    return new ast.CondExpr(
-      leftExpr,
-      dotExpr.numChildren === 0 ? dotExpr['expr']() : null,
-      condExpr.numChildren === 0 ? condExpr['expr']() : null,
+    return new ast.CondExpr(leftExpr, dotExpr, condExpr)
+  },
+
+  CondDotAndQuestionExpr(
+    dotNode: Node,
+    _sep: TerminalNode,
+    condNode: Node,
+  ): any {
+
+    const x = {
+      ...dotNode['expr'](),
+      'condExpr': condNode['expr'](),
+    }
+    console.log(x)
+    return x
+  },
+
+  CondQuestionExpr(left: Node, _sep: TerminalNode, condNode: Node): any {
+    return {
+      'leftExpr': left['expr'](),
+      'dotExpr': null,
+      'condExpr': condNode['expr'](),
+    }
+  },
+
+  CondTypeExpr(node: Node): any {
+    return {'leftExpr': node['expr']()}
+  },
+
+  CondDotted(left: Node, _sep: TerminalNode, number: Node): any {
+    return {
+      'leftExpr': left['expr'](),
+      'dotExpr': new Number(number.sourceString),
+    }
+  },
+
+  // TypeExpr
+
+  CombinatorExpr(
+    _lpar: TerminalNode,
+    name: Node,
+    args: IterationNode,
+    _rpar: Node,
+  ): any {
+    return new ast.CombinatorExpr(
+      name.sourceString,
+      args.children.map((arg: Node) => arg['expr']()),
     )
   },
 
@@ -120,26 +196,57 @@ export const exprNodes = {
     return new ast.CellRefExpr(node['expr']())
   },
 
+  BuiltinExpr(node: Node): any {
+    return node['expr']()
+  },
+
   NegateExpr(_term: TerminalNode, node: Node): any {
     return new ast.NegateExpr(node['expr']())
   },
 
-  ParenExpr(_lpar: TerminalNode, node: Node, _rpar: TerminalNode): any {
-    // Just drop `()` around an expression, it should be fine
-    console.log(node, node['expr']())
-    return node['expr']()
+  // Builtins
+
+  BuiltinOneArg(
+    _lpar: TerminalNode,
+    expr: Node,
+    arg: Node,
+    _rpar: TerminalNode,
+  ): any {
+    // TODO: validate `expr` to be in allowed set of operators
+    return new ast.BuiltinOneArgExpr(
+      expr.sourceString as any,
+      arg['expr'](),
+    )
   },
 
-  RefExpr(node: Node): any {
-    const number = parseInt(node.sourceString)
-    if (!isNaN(number)) {
-      return new ast.NumberExpr(number)
-    }
-    return new ast.NameExpr(node.sourceString)
+  BuiltinZeroArgs(expr: Node): any {
+    // TODO: validate `expr` to be in allowed set of operators
+    return new ast.BuiltinZeroArgs(expr.sourceString as any)
+  },
+
+  // Base rules
+
+  identifier(start: Node, rest: IterationNode): any {
+    return new ast.NameExpr(start.sourceString + rest.sourceString)
+  },
+
+  number(node: TerminalNode): any {
+    return new ast.NumberExpr(parseInt(node.sourceString))
+  },
+
+  // Helpers
+
+  Parens(_lpar: TerminalNode, node: Node, _rpar: TerminalNode): any {
+    // Just drop `()` around an expression, it should be fine
+    return node['expr']()
   },
 }
 
-function parseMath(left: Node, ops: Node, rights: Node): ast.Expression {
+function parseMath(
+  left: Node,
+  ops: IterationNode,
+  rights: IterationNode,
+): ast.Expression {
   const leftExpr = left['expr']()
 
   const opsSigns = []

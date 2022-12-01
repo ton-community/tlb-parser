@@ -1,0 +1,46 @@
+- case: Simple fields
+  code: |
+    ahme_empty$0 {n:#} {X:Type} {Y:Type} extra:Y
+           = HashmapAugE n X Y;
+
+
+# CellRefs
+# =========
+
+- case: Cell ref
+  code: ahme_root$1 root:^(HashmapAug n X Y) = HashmapAugE;
+
+
+## Compare and math
+## =================
+
+- case: Math without parens
+  code: |
+    chain_link$_ {n:#} root:^Cell prev:n?^(ProofChain n) = ProofChain (n + 1);
+
+- case: Math with parens
+  code: |
+    chain_link$_ {n:#} root:^Cell prev:n?^(ProofChain n) = ProofChain (n + (1 + 1));
+
+- case: Different compare nodes
+  code: |
+    top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures)
+      len:(## 8) { len >= 1 } { len <= 8 } chain:(ProofChain len) = TopBlockDescr;
+
+# Anonymous fields
+# ================
+
+- case: Anonymous fields without cell ref
+  code: |
+    gas_limits#_ remaining:int64 [ max_limit:int64 cur_limit:int64 credit:int64 ]
+      = VmGasLimits;
+
+- case: Anonymous fields with cell ref
+  code: |
+    gas_limits#_ remaining:int64 ^[ max_limit:int64 cur_limit:int64 credit:int64 ]
+      = VmGasLimits;
+
+- case: Anonymous fields with named cell ref
+  code: |
+    gas_limits#_ remaining:int64 _:^[ max_limit:int64 cur_limit:int64 credit:int64 ]
+      = VmGasLimits;

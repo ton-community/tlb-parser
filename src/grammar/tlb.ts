@@ -43,9 +43,10 @@ TLB {
   number = digit+
 
   // Builtins
-  binary_builtins = "#<=" | "#<" | "##"
-  unary_builtins = "#"
-  field_builtins = "#" | "Type"
+  builtins_one_arg = "#<=" | "#<" | "##"
+  builtins_zero_args = "#"
+  builtins_field = "#" | "Type"
+
 
   // ----------
   // Base rules
@@ -53,13 +54,14 @@ TLB {
   SourceElement = Declaration | comment
   Declaration = Constructor Fields "=" Combinator ";"
 
+
   // Constructors
   // ~~~~~~~~~~~~
-  Constructor = ConstructorName
-  ConstructorName = ("_" | identifier) ConstructorTag?
+  Constructor = ("_" | identifier) ConstructorTag?
   ConstructorTag =
   	| "$" ("_" | binaryDigit+)  -- binary
     | "#" ("_" | hex)           -- hex
+
 
   // Fields
   // ~~~~~~
@@ -71,18 +73,21 @@ TLB {
     | FieldNamedDef
     | FieldExprDef
 
-  FieldBuiltinDef = "{" identifier ":" field_builtins "}"
+  FieldBuiltinDef = "{" identifier ":" builtins_field "}"
   FieldCurlyExprDef = "{" CurlyExpression "}"
-
-  // Technically, it is used here, because '_:^[ max_limit:int64 ]' is a thing.
-  // It is not just a regular Field definition. Can be joined with 'CellRef'?
-  FieldAnonymousDef = "^"? "[" Fields "]"
-  FieldNamedDef = identifier ":" (FieldAnonymousDef | FieldExprDef)
+  FieldAnonymousDef = FieldAnonRef | FieldNamedAnonRef
+  FieldNamedDef = identifier ":" CondExpr
   FieldExprDef = CondExpr
+
+  FieldAnonRef = "^"? "[" FieldDefinition* "]"
+  FieldNamedAnonRef = identifier ":" FieldAnonRef
+
 
   // Combinators
   // ~~~~~~~~~~~
+
   Combinator = identifier SimpleExpr*
+
 
   // Expressions
   // ~~~~~~~~~~~
@@ -93,25 +98,26 @@ TLB {
   CondExpr =
     | CondDotAndQuestionExpr
     | CondQuestionExpr
-    | TypeExpr
+    | CondTypeExpr
 
   CondDotted = TypeExpr "." number
   CondDotAndQuestionExpr = ( CondDotted | Parens<CondDotted> ) "?" TypeExpr
   CondQuestionExpr = TypeExpr "?" TypeExpr
-
-  // Generic rule to allow parens around some expressions:
-  Parens<expr> = "(" expr ")"
+  CondTypeExpr = TypeExpr
 
   // Compares:
   CompareExpr =
-    | MathExpr "<=" MathExpr  -- lte
-    | MathExpr ">=" MathExpr  -- gte
-    | MathExpr "!=" MathExpr  -- ne
-    | MathExpr "=" MathExpr   -- eq
-    | MathExpr "<" MathExpr   -- lt
-    | MathExpr ">" MathExpr   -- gt
-    | Parens<CompareExpr>     -- parens
-    | MathExpr                -- noop
+    | CompareOperatorExpr
+    | Parens<CompareExpr>
+    | MathExpr
+
+  CompareOperatorExpr =
+    | MathExpr "<=" MathExpr
+    | MathExpr ">=" MathExpr
+    | MathExpr "!=" MathExpr
+    | MathExpr "=" MathExpr
+    | MathExpr "<" MathExpr
+    | MathExpr ">" MathExpr
 
   // Base rule for field defining expressions:
   TypeExpr =
@@ -123,16 +129,17 @@ TLB {
 
   // Math:
   MathExpr = MulExpr ("+" MulExpr)*
-  MulExpr = SimpleExpr ("*" SimpleExpr)*
+  // You can multiply by constant values only: 'Bit' and numbers, basically
+  MulExpr = SimpleExpr ("*" RefExpr)*
 
   // TypeExpr's items:
   CellRefExpr = "^" ( CellRefInner | Parens<CellRefInner> )
   CellRefInner = CombinatorExpr | identifier
 
-  BuiltinExpr = BuiltinBinary | BuiltinUnary
+  BuiltinExpr = BuiltinOneArg | BuiltinZeroArgs
   // This needs extra 'Parens' because of '(##)' expr:
-  BuiltinBinary = "(" ( binary_builtins | Parens<binary_builtins> ) RefExpr ")"
-  BuiltinUnary = unary_builtins
+  BuiltinOneArg = "(" ( builtins_one_arg | Parens<builtins_one_arg> ) RefExpr ")"
+  BuiltinZeroArgs = builtins_zero_args
 
   // It is different from 'Combinator' only in the quantity part:
   // we always need at least one argument here and it can be complex.
@@ -145,7 +152,15 @@ TLB {
     | Parens<SimpleExpr>
 
   NegateExpr = "~" SimpleExpr
-  RefExpr = identifier | number
+  RefExpr = RefInner | Parens<RefInner>
+  RefInner = identifier | number
+
+
+  // Helpers
+  // ~~~~~~~
+
+  // Generic rule to allow parens around some expressions:
+  Parens<expr> = "(" expr ")"
 }
 `
 
