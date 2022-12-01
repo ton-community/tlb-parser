@@ -1,0 +1,114 @@
+# Declarations
+# ============
+
+- case: missing `;` in definition
+  code: unit$_ = Unit
+  error: |
+    Line 1, col 14: expected ";"
+
+- case: missing `=` in definition
+  code: unit$_ Unit;
+  error: |
+    Line 1, col 12: expected "="
+
+
+# Builtins
+# ========
+
+- case: invalid type specifier
+  code: |
+    // Must be `Type` or `#`, not `Wrong`:
+    merkle_proof#03 {X:Wrong} virtual_root:^X = MERKLE_PROOF X;
+  error: |
+    Line 2, col 20: expected "Type" or "#"
+
+- case: invalid builtin expression
+  code: |
+    tempa$01 len:(## 9) external_address:(bits len) = TempA; // ok
+    tempb$01 len:(#@ 9) external_address:(bits len) = TempB;
+  errorStart: |
+    Line 2, col 16: expected "
+
+
+# Math
+# ====
+
+- case: wrong math sign `-`
+  code: |
+    vm_tupref_any$_ {n:#} ref:^(VmTuple (n - 2)) = VmTupleRef n;
+  errorStart: |
+    Line 1, col 40: expected ")",
+
+- case: wrong math sign `/`
+  code: |
+    vm_tupref_any$_ {n:#} ref:^(VmTuple (n / 2)) = VmTupleRef n;
+  errorStart: |
+    Line 1, col 40: expected ")",
+
+- case: math with anonymous fields
+  code: transaction$0111 ^[ in_msg:bits256 ] + 1 = Transaction;
+  errorStart: |
+    Line 1, col 38: expected "=",
+
+
+# Compares
+# ========
+
+- case: operator `==` used instead of `=` for compare
+  code: |
+    temps#_ {n:#} {m:#} {n = (~m)} = Temp n;  // ok
+    temps#_ {n:#} {m:#} {n == (~m)} = Temp n;  // not ok
+  errorStart: |
+    Line 2, col 25: expected
+
+- case: nested compare
+  code: |
+    // Correct:
+    atemp total:(## 16) main:(## 16)
+      { main <= total } { main >= 1 } = ValidatorSet;
+
+    // Wrong:
+    btemp total:(## 16) main:(## 16)
+      { total <= main >= 1 } = ValidatorSet;
+  errorStart: |
+    Line 7, col 17: expected "}",
+
+
+# Parens
+# ======
+
+- case: parens around constructor
+  code: |
+    (unit$_) = Unit;
+  errorStart: |
+    Line 1, col 1: expected end of input
+
+- case: parens around tag
+  code: |
+    unit($_) = Unit;
+  errorStart: |
+    Line 1, col 6: expected
+
+- case: parens around fields
+  code: |
+    nothing$0 ({X:Type}) = Maybe X;
+  errorStart: |
+    Line 1, col 12: expected
+
+- case: parens around combinator
+  code: |
+    unit$_ = (Unit);
+  errorStart: |
+    Line 1, col 10: expected
+
+# Skipping this test for now, because I cannot make it work.
+- case: parens around combinator args
+  code: |
+    temp {n:#} x:(Unary ~n) = Temp (~(n + 1));
+  skip: true
+
+- case: parens on the left of `*`
+  code: |
+    temp3 {n:#} = Temp3 (n * (2 + 1));
+  errorStart: |
+    Line 1, col 29: expected

@@ -574,7 +574,7 @@ masterchain_block_extra#cca5
 validator#53 public_key:SigPubKey weight:uint64 = ValidatorDescr;
 validator_addr#73 public_key:SigPubKey weight:uint64 adnl_addr:bits256 = ValidatorDescr;
 validators#11 utime_since:uint32 utime_until:uint32
-  total:(## 16) main:(## 16) { main <= total } { main >= 1 }
+  total:((##) 16) main:(## 16) { main <= total } { main >= 1 }
   list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
 validators_ext#12 utime_since:uint32 utime_until:uint32
   total:(## 16) main:(## 16) { main <= total } { main >= 1 }

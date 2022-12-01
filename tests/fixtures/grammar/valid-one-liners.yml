@@ -1,0 +1,82 @@
+# === Warning! ===
+# Please, don't add cases here if they are already
+# present in `block.tlb` fixture.
+# We only test strange corner-cases here.
+
+# Parens
+# ======
+
+- case: parens around binary builtins
+  code: |
+    temp0 a:(## 1) = B0;
+    temp1 a:((##) 1) = B1;
+    temp2 a:(## 1) = B2;
+    temp3 a:((## 1)) = B3;
+    temp4 a:(## 1) = B4;
+    temp5 a:(## (1)) = B5;
+
+    tempall a:((((##) 1))) = BAll;
+
+- case: parens around unary builtin
+  code: |
+    temp
+      flags:(## 8) { flags <= 1 }
+      seq_no:(#)
+      { prev_seq_no:# } { (~prev_seq_no + 1) = seq_no }
+      = BlockInfo;
+
+- case: parens around negate expression
+  code: |
+    temp {n:#} x:(Unary ~n) = Temp ~((n + 1));
+
+- case: parens around cell ref
+  code: |
+    temp0 p:^(BlkPrevInfo a) = B0;
+    temp1 p:^(BlkPrevInfo a) = B1;
+    temp2 p:^((BlkPrevInfo a)) = B2;
+    temp3 p:^(BlkPrevInfo a) = B3;
+    temp4 p:(^(BlkPrevInfo a)) = B4;
+
+    tempall p:(^((BlkPrevInfo a))) = BAll;
+
+    temp5 p:^(BoolFalse) = B5;
+    temp6 p:(^BoolFalse) = B6;
+    temp7 p:(^(BoolFalse)) = B7;
+
+- case: parens in curly
+  code: |
+    a1 t:(## 16) m:(## 16) { (m <= t) } { m >= 1 } = A1;
+    a2 t:(## 16) m:(## 16) { (m <= t) } { (m >= 1) } = A2;
+    a3 t:(## 16) m:(## 16) { ((m <= t)) } { (((m >= 1))) } = A2;
+
+- case: parens in `+` math
+  code: |
+    temp1 {n:#} = Temp1 (n + 1 + 1);
+    temp2 {n:#} = Temp2 (((n) + 1 + 1));
+    temp3 {n:#} = Temp3 ((n + 1) + 1);
+    temp4 {n:#} = Temp4 (n + (1 + 1));
+    temp5 {n:#} = Temp5 (n + (1));
+    temp6 {n:#} = Temp6 ((n) + (1));
+
+- case: parens in `+` math
+  code: |
+    temp1 {n:#} = Temp1 (n * 2 + 1);
+    temp2 {n:#} = Temp2 ((n * 2) + 1);
+    temp3 {n:#} = Temp3 ((n * (2)));
+    temp4 {n:#} = Temp3 ((n) * (2));
+
+
+# Fields
+# ======
+
+- case: anonymous fields ref
+  code: |
+    transaction$0111 account_addr:bits256
+      ^[ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ]
+    = Transaction;
+
+- case: anonymous fields non-ref
+  code: |
+    transaction$0111 account_addr:bits256
+      [ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ]
+    = Transaction;

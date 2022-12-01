@@ -10,8 +10,8 @@ TLB {
   // Override Ohm's built-in definition of space.
   space := whitespace | lineTerminator | comment
 
-  whitespace
-    = "\t"
+  whitespace =
+    | "\t"
     | "\x0B"    -- verticalTab
     | "\x0C"    -- formFeed
     | " "
@@ -41,7 +41,12 @@ TLB {
 
   // Primitives
   number = digit+
-  builtins = "#<" | "#<=" | "##" | "#"
+
+  // Builtins
+  builtins_one_arg = "#<=" | "#<" | "##"
+  builtins_zero_args = "#"
+  builtins_field = "#" | "Type"
+
 
   // ----------
   // Base rules
@@ -49,54 +54,113 @@ TLB {
   SourceElement = Declaration | comment
   Declaration = Constructor Fields "=" Combinator ";"
 
+
   // Constructors
   // ~~~~~~~~~~~~
-  Constructor = ConstructorName
-  ConstructorName = ("_" | identifier) ConstructorTag?
-  ConstructorTag
-  	= "$" (binaryDigit+ | "_")
-    | "#" (hex | "_")
+  Constructor = ("_" | identifier) ConstructorTag?
+  ConstructorTag =
+  	| "$" ("_" | binaryDigit+)  -- binary
+    | "#" ("_" | hex)           -- hex
+
 
   // Fields
   // ~~~~~~
   Fields = FieldDefinition*
-  FieldDefinition = FieldImplicitDef | FieldNamedDef | CellRefExpr | ParenExpr | CondExpr
-  FieldImplicitDef = "{" (FieldImplicit | Expression) "}"
-  FieldImplicit = identifier ":" ("#" | "Type")
+  FieldDefinition =
+    | FieldBuiltinDef
+    | FieldCurlyExprDef
+    | FieldAnonymousDef
+    | FieldNamedDef
+    | FieldExprDef
+
+  FieldBuiltinDef = "{" identifier ":" builtins_field "}"
+  FieldCurlyExprDef = "{" CurlyExpression "}"
+  FieldAnonymousDef = FieldAnonRef | FieldNamedAnonRef
   FieldNamedDef = identifier ":" CondExpr
+  FieldExprDef = CondExpr
+
+  FieldAnonRef = "^"? "[" FieldDefinition* "]"
+  FieldNamedAnonRef = identifier ":" FieldAnonRef
+
 
   // Combinators
   // ~~~~~~~~~~~
-  Combinator = identifier TypeExpr*
+
+  Combinator = identifier SimpleExpr*
+
 
   // Expressions
   // ~~~~~~~~~~~
-  Expression = CompareExpr
 
-  CompareExpr
-    = MathExpr "<=" MathExpr  -- lte
-    | MathExpr ">=" MathExpr  -- gte
-    | MathExpr "!=" MathExpr  -- ne
-    | MathExpr "=" MathExpr   -- eq
-    | MathExpr "<" MathExpr   -- lt
-    | MathExpr ">" MathExpr   -- gt
-    | MathExpr                -- noop
+  // First come the complex rules we only use to define fields.
+  // The line between fields definition and expressions is blury at this point.
+  CurlyExpression = CompareExpr
+  CondExpr =
+    | CondDotAndQuestionExpr
+    | CondQuestionExpr
+    | CondTypeExpr
 
+  CondDotted = TypeExpr "." number
+  CondDotAndQuestionExpr = ( CondDotted | Parens<CondDotted> ) "?" TypeExpr
+  CondQuestionExpr = TypeExpr "?" TypeExpr
+  CondTypeExpr = TypeExpr
+
+  // Compares:
+  CompareExpr =
+    | CompareOperatorExpr
+    | Parens<CompareExpr>
+    | MathExpr
+
+  CompareOperatorExpr =
+    | MathExpr "<=" MathExpr
+    | MathExpr ">=" MathExpr
+    | MathExpr "!=" MathExpr
+    | MathExpr "=" MathExpr
+    | MathExpr "<" MathExpr
+    | MathExpr ">" MathExpr
+
+  // Base rule for field defining expressions:
+  TypeExpr =
+    | CellRefExpr
+    | BuiltinExpr
+    | CombinatorExpr
+    | SimpleExpr
+    | Parens<TypeExpr>
+
+  // Math:
   MathExpr = MulExpr ("+" MulExpr)*
-  MulExpr = PrimitiveExpr ("*" PrimitiveExpr)*
+  // You can multiply by constant values only: 'Bit' and numbers, basically
+  MulExpr = SimpleExpr ("*" RefExpr)*
 
-  // Misc
-  // ~~~~
-  PrimitiveExpr = CondExpr+
-  CondExpr = NestedTypeExpr CondTypeExpr?
-  NestedTypeExpr = TypeExpr ("." TypeExpr)?
-  CondTypeExpr = "?" TypeExpr
+  // TypeExpr's items:
+  CellRefExpr = "^" ( CellRefInner | Parens<CellRefInner> )
+  CellRefInner = CombinatorExpr | identifier
 
-  TypeExpr = "~"? ( AnnonymousConstructorExpr | CellRefExpr | ParenExpr | RefExpr )
-  AnnonymousConstructorExpr = "[" Fields "]"
-  CellRefExpr = "^" TypeExpr
-  ParenExpr = "(" Expression ")"
-  RefExpr = builtins | identifier | number
+  BuiltinExpr = BuiltinOneArg | BuiltinZeroArgs
+  // This needs extra 'Parens' because of '(##)' expr:
+  BuiltinOneArg = "(" ( builtins_one_arg | Parens<builtins_one_arg> ) RefExpr ")"
+  BuiltinZeroArgs = builtins_zero_args
+
+  // It is different from 'Combinator' only in the quantity part:
+  // we always need at least one argument here and it can be complex.
+  CombinatorExpr = "(" identifier TypeExpr+ ")"
+
+  SimpleExpr =
+    | NegateExpr
+    | MathExpr
+    | RefExpr
+    | Parens<SimpleExpr>
+
+  NegateExpr = "~" SimpleExpr
+  RefExpr = RefInner | Parens<RefInner>
+  RefInner = identifier | number
+
+
+  // Helpers
+  // ~~~~~~~
+
+  // Generic rule to allow parens around some expressions:
+  Parens<expr> = "(" expr ")"
 }
 `
 
