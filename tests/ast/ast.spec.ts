@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 
-import { ast } from '../src'
-import { Program } from '../src/ast'
-import { loadYamlCases } from './loaders/yaml'
+import { ast } from '../../src'
+import { Program } from '../../src/ast/nodes'
+import { loadYamlCases } from '../loaders/yaml'
 
-const fixturesDir = path.resolve(__dirname, 'fixtures')
+const fixturesDir = path.resolve(__dirname, '..', 'fixtures')
 
 describe('ast generation', () => {
   test('block.tlb can be parsed', () => {

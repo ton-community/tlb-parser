@@ -1,0 +1,96 @@
+- case: With multiple declarations
+  code: |
+    unit$_ = Unit;
+    pair$_ {X:Type} {Y:Type} first:X second:Y = Both X Y;
+  result: |
+    {
+      "Program": 1,
+      "Declaration": 2,
+      "Constructor": 2,
+      "Combinator": 2,
+      "FieldBuiltinDef": 2,
+      "FieldNamedDef": 2,
+      "NameExpr": 4
+    }
+
+- case: With compares
+  code: |
+    top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures)
+      len:(## 8) { len >= 1 } { len <= 8 } chain:(ProofChain len) = TopBlockDescr;
+  result: |
+    {
+      "Program": 1,
+      "Declaration": 1,
+      "Constructor": 1,
+      "FieldNamedDef": 4,
+      "NameExpr": 5,
+      "CombinatorExpr": 2,
+      "CellRefExpr": 1,
+      "BuiltinOneArgExpr": 1,
+      "NumberExpr": 3,
+      "FieldCurlyExprDef": 2,
+      "CompareExpr": 2,
+      "Combinator": 1
+    }
+
+- case: With math
+  code: |
+    hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+          {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+  result: |
+    {
+      "Program": 1,
+      "Declaration": 1,
+      "Constructor": 1,
+      "FieldBuiltinDef": 4,
+      "FieldNamedDef": 2,
+      "CombinatorExpr": 2,
+      "NegateExpr": 2,
+      "NameExpr": 9,
+      "FieldCurlyExprDef": 1,
+      "CompareExpr": 1,
+      "MathExpr": 1,
+      "Combinator": 1
+    }
+
+- case: With conditions
+  code: |
+    dns_adnl_address#ad01 adnl_addr:bits256 flags:(## 8) { flags <= 1 }
+      proto_list:flags . 0?ProtoList = DNSRecord;  // often in record #2
+  result: |
+    {
+      "Program": 1,
+      "Declaration": 1,
+      "Constructor": 1,
+      "FieldNamedDef": 3,
+      "NameExpr": 4,
+      "BuiltinOneArgExpr": 1,
+      "NumberExpr": 2,
+      "FieldCurlyExprDef": 1,
+      "CompareExpr": 1,
+      "CondExpr": 1,
+      "Combinator": 1
+    }
+
+- case: With annonymous fields
+  code: |
+    transaction$0111 account_addr:bits256 lt:uint64
+      prev_trans_hash:bits256 prev_trans_lt:uint64 now:uint32
+      outmsg_cnt:uint15
+      orig_status:AccountStatus end_status:AccountStatus
+      ^[ in_msg:(Maybe ^(Message Any)) out_msgs:(HashmapE 15 ^(Message Any)) ]
+      total_fees:CurrencyCollection state_update:^(HASH_UPDATE Account)
+      description:^TransactionDescr = Transaction;
+  result: |
+    {
+      "Program": 1,
+      "Declaration": 1,
+      "Constructor": 1,
+      "FieldNamedDef": 13,
+      "NameExpr": 13,
+      "FieldAnonymousDef": 1,
+      "CombinatorExpr": 5,
+      "CellRefExpr": 4,
+      "NumberExpr": 1,
+      "Combinator": 1
+    }

@@ -1,0 +1,1044 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ast generation Generated ast example: Anonymous fields with cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 3,
+          "line": 2,
+        },
+        "name": "VmGasLimits",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "gas_limits",
+        "parent": [Circular],
+        "tag": "#_",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "locations": {
+              "column": 24,
+              "line": 1,
+            },
+            "name": "int64",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 14,
+            "line": 1,
+          },
+          "name": "remaining",
+          "parent": [Circular],
+        },
+        FieldAnonymousDef {
+          "fields": [
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 43,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 33,
+                "line": 1,
+              },
+              "name": "max_limit",
+              "parent": [Circular],
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 59,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 49,
+                "line": 1,
+              },
+              "name": "cur_limit",
+              "parent": [Circular],
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 72,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 65,
+                "line": 1,
+              },
+              "name": "credit",
+              "parent": [Circular],
+            },
+          ],
+          "isRef": true,
+          "locations": {
+            "column": 30,
+            "line": 1,
+          },
+          "name": null,
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Anonymous fields with named cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 3,
+          "line": 2,
+        },
+        "name": "VmGasLimits",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "gas_limits",
+        "parent": [Circular],
+        "tag": "#_",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "locations": {
+              "column": 24,
+              "line": 1,
+            },
+            "name": "int64",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 14,
+            "line": 1,
+          },
+          "name": "remaining",
+          "parent": [Circular],
+        },
+        FieldAnonymousDef {
+          "fields": [
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 45,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 35,
+                "line": 1,
+              },
+              "name": "max_limit",
+              "parent": [Circular],
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 61,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 51,
+                "line": 1,
+              },
+              "name": "cur_limit",
+              "parent": [Circular],
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 74,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 67,
+                "line": 1,
+              },
+              "name": "credit",
+              "parent": [Circular],
+            },
+          ],
+          "isRef": true,
+          "locations": {
+            "column": 30,
+            "line": 1,
+          },
+          "name": "_",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Anonymous fields without cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 3,
+          "line": 2,
+        },
+        "name": "VmGasLimits",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "gas_limits",
+        "parent": [Circular],
+        "tag": "#_",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "locations": {
+              "column": 24,
+              "line": 1,
+            },
+            "name": "int64",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 14,
+            "line": 1,
+          },
+          "name": "remaining",
+          "parent": [Circular],
+        },
+        FieldAnonymousDef {
+          "fields": [
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 42,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 32,
+                "line": 1,
+              },
+              "name": "max_limit",
+              "parent": [Circular],
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 58,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 48,
+                "line": 1,
+              },
+              "name": "cur_limit",
+              "parent": [Circular],
+            },
+            FieldNamedDef {
+              "expr": NameExpr {
+                "locations": {
+                  "column": 71,
+                  "line": 1,
+                },
+                "name": "int64",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 64,
+                "line": 1,
+              },
+              "name": "credit",
+              "parent": [Circular],
+            },
+          ],
+          "isRef": false,
+          "locations": {
+            "column": 30,
+            "line": 1,
+          },
+          "name": null,
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Cell ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 40,
+          "line": 1,
+        },
+        "name": "HashmapAugE",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "ahme_root",
+        "parent": [Circular],
+        "tag": "$1",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": CombinatorExpr {
+              "args": [
+                NameExpr {
+                  "locations": {
+                    "column": 31,
+                    "line": 1,
+                  },
+                  "name": "n",
+                  "parent": [Circular],
+                },
+                NameExpr {
+                  "locations": {
+                    "column": 33,
+                    "line": 1,
+                  },
+                  "name": "X",
+                  "parent": [Circular],
+                },
+                NameExpr {
+                  "locations": {
+                    "column": 35,
+                    "line": 1,
+                  },
+                  "name": "Y",
+                  "parent": [Circular],
+                },
+              ],
+              "locations": {
+                "column": 19,
+                "line": 1,
+              },
+              "name": "HashmapAug",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 18,
+              "line": 1,
+            },
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 13,
+            "line": 1,
+          },
+          "name": "root",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Different compare nodes 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 63,
+          "line": 2,
+        },
+        "name": "TopBlockDescr",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "top_block_descr",
+        "parent": [Circular],
+        "tag": "#d5",
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "locations": {
+              "column": 30,
+              "line": 1,
+            },
+            "name": "BlockIdExt",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 20,
+            "line": 1,
+          },
+          "name": "proof_for",
+          "parent": [Circular],
+        },
+        FieldNamedDef {
+          "expr": CombinatorExpr {
+            "args": [
+              CellRefExpr {
+                "expr": NameExpr {
+                  "locations": {
+                    "column": 60,
+                    "line": 1,
+                  },
+                  "name": "BlockSignatures",
+                  "parent": [Circular],
+                },
+                "locations": {
+                  "column": 59,
+                  "line": 1,
+                },
+                "parent": [Circular],
+              },
+            ],
+            "locations": {
+              "column": 52,
+              "line": 1,
+            },
+            "name": "Maybe",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 41,
+            "line": 1,
+          },
+          "name": "signatures",
+          "parent": [Circular],
+        },
+        FieldNamedDef {
+          "expr": BuiltinOneArgExpr {
+            "arg": NumberExpr {
+              "locations": {
+                "column": 9,
+                "line": 2,
+              },
+              "num": 8,
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 5,
+              "line": 2,
+            },
+            "name": "##",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 1,
+            "line": 2,
+          },
+          "name": "len",
+          "parent": [Circular],
+        },
+        FieldCurlyExprDef {
+          "expr": CompareExpr {
+            "left": NameExpr {
+              "locations": {
+                "column": 14,
+                "line": 2,
+              },
+              "name": "len",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 18,
+              "line": 2,
+            },
+            "op": ">=",
+            "parent": [Circular],
+            "right": NumberExpr {
+              "locations": {
+                "column": 21,
+                "line": 2,
+              },
+              "num": 1,
+              "parent": [Circular],
+            },
+          },
+          "locations": {
+            "column": 12,
+            "line": 2,
+          },
+          "parent": [Circular],
+        },
+        FieldCurlyExprDef {
+          "expr": CompareExpr {
+            "left": NameExpr {
+              "locations": {
+                "column": 27,
+                "line": 2,
+              },
+              "name": "len",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 31,
+              "line": 2,
+            },
+            "op": "<=",
+            "parent": [Circular],
+            "right": NumberExpr {
+              "locations": {
+                "column": 34,
+                "line": 2,
+              },
+              "num": 8,
+              "parent": [Circular],
+            },
+          },
+          "locations": {
+            "column": 25,
+            "line": 2,
+          },
+          "parent": [Circular],
+        },
+        FieldNamedDef {
+          "expr": CombinatorExpr {
+            "args": [
+              NameExpr {
+                "locations": {
+                  "column": 56,
+                  "line": 2,
+                },
+                "name": "len",
+                "parent": [Circular],
+              },
+            ],
+            "locations": {
+              "column": 44,
+              "line": 2,
+            },
+            "name": "ProofChain",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 38,
+            "line": 2,
+          },
+          "name": "chain",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Math with parens 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [
+          MathExpr {
+            "left": NameExpr {
+              "locations": {
+                "column": 68,
+                "line": 1,
+              },
+              "name": "n",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 67,
+              "line": 1,
+            },
+            "op": "+",
+            "parent": [Circular],
+            "right": MathExpr {
+              "left": NumberExpr {
+                "locations": {
+                  "column": 73,
+                  "line": 1,
+                },
+                "num": 1,
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 72,
+                "line": 1,
+              },
+              "op": "+",
+              "parent": [Circular],
+              "right": NumberExpr {
+                "locations": {
+                  "column": 77,
+                  "line": 1,
+                },
+                "num": 1,
+                "parent": [Circular],
+              },
+            },
+          },
+        ],
+        "locations": {
+          "column": 56,
+          "line": 1,
+        },
+        "name": "ProofChain",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "chain_link",
+        "parent": [Circular],
+        "tag": "$_",
+      },
+      "fields": [
+        FieldBuiltinDef {
+          "locations": {
+            "column": 14,
+            "line": 1,
+          },
+          "name": "n",
+          "parent": [Circular],
+          "type": "#",
+        },
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": NameExpr {
+              "locations": {
+                "column": 26,
+                "line": 1,
+              },
+              "name": "Cell",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 25,
+              "line": 1,
+            },
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 20,
+            "line": 1,
+          },
+          "name": "root",
+          "parent": [Circular],
+        },
+        FieldNamedDef {
+          "expr": CondExpr {
+            "condExpr": CellRefExpr {
+              "expr": CombinatorExpr {
+                "args": [
+                  NameExpr {
+                    "locations": {
+                      "column": 51,
+                      "line": 1,
+                    },
+                    "name": "n",
+                    "parent": [Circular],
+                  },
+                ],
+                "locations": {
+                  "column": 39,
+                  "line": 1,
+                },
+                "name": "ProofChain",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 38,
+                "line": 1,
+              },
+              "parent": [Circular],
+            },
+            "dotExpr": null,
+            "left": NameExpr {
+              "locations": {
+                "column": 36,
+                "line": 1,
+              },
+              "name": "n",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 36,
+              "line": 1,
+            },
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 31,
+            "line": 1,
+          },
+          "name": "prev",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Math without parens 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [
+          MathExpr {
+            "left": NameExpr {
+              "locations": {
+                "column": 68,
+                "line": 1,
+              },
+              "name": "n",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 67,
+              "line": 1,
+            },
+            "op": "+",
+            "parent": [Circular],
+            "right": NumberExpr {
+              "locations": {
+                "column": 72,
+                "line": 1,
+              },
+              "num": 1,
+              "parent": [Circular],
+            },
+          },
+        ],
+        "locations": {
+          "column": 56,
+          "line": 1,
+        },
+        "name": "ProofChain",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "chain_link",
+        "parent": [Circular],
+        "tag": "$_",
+      },
+      "fields": [
+        FieldBuiltinDef {
+          "locations": {
+            "column": 14,
+            "line": 1,
+          },
+          "name": "n",
+          "parent": [Circular],
+          "type": "#",
+        },
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": NameExpr {
+              "locations": {
+                "column": 26,
+                "line": 1,
+              },
+              "name": "Cell",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 25,
+              "line": 1,
+            },
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 20,
+            "line": 1,
+          },
+          "name": "root",
+          "parent": [Circular],
+        },
+        FieldNamedDef {
+          "expr": CondExpr {
+            "condExpr": CellRefExpr {
+              "expr": CombinatorExpr {
+                "args": [
+                  NameExpr {
+                    "locations": {
+                      "column": 51,
+                      "line": 1,
+                    },
+                    "name": "n",
+                    "parent": [Circular],
+                  },
+                ],
+                "locations": {
+                  "column": 39,
+                  "line": 1,
+                },
+                "name": "ProofChain",
+                "parent": [Circular],
+              },
+              "locations": {
+                "column": 38,
+                "line": 1,
+              },
+              "parent": [Circular],
+            },
+            "dotExpr": null,
+            "left": NameExpr {
+              "locations": {
+                "column": 36,
+                "line": 1,
+              },
+              "name": "n",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 36,
+              "line": 1,
+            },
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 31,
+            "line": 1,
+          },
+          "name": "prev",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast generation Generated ast example: Simple fields 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [
+          NameExpr {
+            "locations": {
+              "column": 15,
+              "line": 2,
+            },
+            "name": "n",
+            "parent": [Circular],
+          },
+          NameExpr {
+            "locations": {
+              "column": 17,
+              "line": 2,
+            },
+            "name": "X",
+            "parent": [Circular],
+          },
+          NameExpr {
+            "locations": {
+              "column": 19,
+              "line": 2,
+            },
+            "name": "Y",
+            "parent": [Circular],
+          },
+        ],
+        "locations": {
+          "column": 3,
+          "line": 2,
+        },
+        "name": "HashmapAugE",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "ahme_empty",
+        "parent": [Circular],
+        "tag": "$0",
+      },
+      "fields": [
+        FieldBuiltinDef {
+          "locations": {
+            "column": 14,
+            "line": 1,
+          },
+          "name": "n",
+          "parent": [Circular],
+          "type": "#",
+        },
+        FieldBuiltinDef {
+          "locations": {
+            "column": 20,
+            "line": 1,
+          },
+          "name": "X",
+          "parent": [Circular],
+          "type": "Type",
+        },
+        FieldBuiltinDef {
+          "locations": {
+            "column": 29,
+            "line": 1,
+          },
+          "name": "Y",
+          "parent": [Circular],
+          "type": "Type",
+        },
+        FieldNamedDef {
+          "expr": NameExpr {
+            "locations": {
+              "column": 44,
+              "line": 1,
+            },
+            "name": "Y",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 38,
+            "line": 1,
+          },
+          "name": "extra",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
