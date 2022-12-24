@@ -1,19 +1,26 @@
 import type { Node, TerminalNode, IterationNode } from 'ohm-js'
 
-import * as ast from './ast'
+import * as ast from './ast/nodes'
+import { withLocations } from './ast/locations'
 
 export const rootNodes = {
   Program(node: IterationNode): any {
-    return new ast.Program(
-      node.children.map((child: Node) => child['root']()),
+    return withLocations(
+      new ast.Program(
+        node.children.map((child: Node) => child['root']()),
+      ),
+      node,
     )
   },
 
   SourceElement(node: Node): any {
-    return new ast.Declaration(
-      node.child(0)['Constructor'](),
-      node.child(1)['Field'](),
-      node.child(3)['Combinator'](),
+    return withLocations(
+      new ast.Declaration(
+        node.child(0)['Constructor'](),
+        node.child(1)['Field'](),
+        node.child(3)['Combinator'](),
+      ),
+      node,
     )
   },
 }
@@ -27,7 +34,10 @@ export const constructorNodes = {
       tagValue = tag.child(0)['Constructor']()
     }
 
-    return new ast.Constructor(nameValue, tagValue)
+    return withLocations(
+      new ast.Constructor(nameValue, tagValue),
+      name,
+    )
   },
 
   ConstructorTag(node: Node): any {
@@ -46,41 +56,57 @@ export const fieldNodes = {
   },
 
   FieldBuiltinDef(
-    _lpar: TerminalNode,
+    lpar: TerminalNode,
     name: Node,
     _sep: TerminalNode,
     type: Node,
     _rpar: TerminalNode,
   ): any {
     // TODO: validate `type.sourceString` to be in allowed values.
-    return new ast.FieldBuiltinDef(
-      name.sourceString,
-      type.sourceString as any,
+    return withLocations(
+      new ast.FieldBuiltinDef(
+        name.sourceString,
+        type.sourceString as any,
+      ),
+      lpar,
     )
   },
 
   FieldCurlyExprDef(
-    _lpar: TerminalNode,
+    lpar: TerminalNode,
     expr: Node,
     _rpar: TerminalNode,
   ): any {
-    return new ast.FieldCurlyExprDef(expr['expr']())
+    return withLocations(
+      new ast.FieldCurlyExprDef(expr['expr']()),
+      lpar,
+    )
   },
 
   FieldAnonymousDef(node: Node): any {
     const {name, isRef, fields} = node['Field']()
-    return new ast.FieldAnonymousDef(name, isRef, fields)
+    return withLocations(
+      new ast.FieldAnonymousDef(name, isRef, fields),
+      node,
+    )
   },
 
   FieldNamedDef(name: Node, _sep: TerminalNode, expr: Node): any {
-    return new ast.FieldNamedDef(name.sourceString, expr['expr']())
+    return withLocations(
+      new ast.FieldNamedDef(name.sourceString, expr['expr']()),
+      name,
+    )
   },
 
   FieldExprDef(node: Node): any {
-    return new ast.FieldExprDef(node['expr']())
+    return withLocations(
+      new ast.FieldExprDef(node['expr']()),
+      node,
+    )
   },
 
   // Helpers to parse complex anonymous fields:
+  // TODO: move out of this semantics
   FieldAnonRef(
     ref: TerminalNode,
     _lpar: TerminalNode,
@@ -104,9 +130,12 @@ export const fieldNodes = {
 
 export const combinatorNodes = {
   Combinator(name: Node, exprs: IterationNode): any {
-    return new ast.Combinator(
-      name.sourceString,
-      exprs.children.map((typeExpr: Node) => typeExpr['expr']()),
+    return withLocations(
+      new ast.Combinator(
+        name.sourceString,
+        exprs.children.map((typeExpr: Node) => typeExpr['expr']()),
+      ),
+      name,
     )
   },
 }
@@ -127,36 +156,41 @@ export const exprNodes = {
   },
 
   CompareOperatorExpr(left: Node, op: TerminalNode, right: Node): any {
-    return new ast.CompareExpr(
-      left['expr'](),
-      op.sourceString as any,
-      right['expr'](),
+    return withLocations(
+      new ast.CompareExpr(
+        left['expr'](),
+        op.sourceString as any,
+        right['expr'](),
+      ),
+      op,
     )
   },
 
   // Conditional types
 
   CondExpr(expr: Node): any {
-    const {leftExpr, dotExpr, condExpr} = expr['expr']()
+    const { leftExpr, dotExpr, condExpr } = expr['expr']()
     if (dotExpr === undefined && condExpr === undefined) {
       return leftExpr
     }
 
-    return new ast.CondExpr(leftExpr, dotExpr, condExpr)
+    return withLocations(
+      new ast.CondExpr(leftExpr, dotExpr, condExpr),
+      expr,
+    )
   },
 
+  // TODO: move out of this semantics
   CondDotAndQuestionExpr(
     dotNode: Node,
     _sep: TerminalNode,
     condNode: Node,
   ): any {
 
-    const x = {
+    return {
       ...dotNode['expr'](),
       'condExpr': condNode['expr'](),
     }
-    console.log(x)
-    return x
   },
 
   CondQuestionExpr(left: Node, _sep: TerminalNode, condNode: Node): any {
@@ -168,7 +202,9 @@ export const exprNodes = {
   },
 
   CondTypeExpr(node: Node): any {
-    return {'leftExpr': node['expr']()}
+    return {
+      'leftExpr': node['expr'](),
+    }
   },
 
   CondDotted(left: Node, _sep: TerminalNode, number: Node): any {
@@ -181,64 +217,82 @@ export const exprNodes = {
   // TypeExpr
 
   CombinatorExpr(
-    _lpar: TerminalNode,
+    lpar: TerminalNode,
     name: Node,
     args: IterationNode,
     _rpar: Node,
   ): any {
-    return new ast.CombinatorExpr(
-      name.sourceString,
-      args.children.map((arg: Node) => arg['expr']()),
+    return withLocations(
+      new ast.CombinatorExpr(
+        name.sourceString,
+        args.children.map((arg: Node) => arg['expr']()),
+      ),
+      lpar,
     )
   },
 
-  CellRefExpr(_ref: TerminalNode, node: Node): any {
-    return new ast.CellRefExpr(node['expr']())
+  CellRefExpr(ref: TerminalNode, node: Node): any {
+    return withLocations(
+      new ast.CellRefExpr(node['expr']()),
+      ref,
+    )
   },
 
   BuiltinExpr(node: Node): any {
-    return node['expr']()
+    return withLocations(node['expr'](), node)
   },
 
-  NegateExpr(_term: TerminalNode, node: Node): any {
-    return new ast.NegateExpr(node['expr']())
+  NegateExpr(op: TerminalNode, node: Node): any {
+    return withLocations(new ast.NegateExpr(node['expr']()), op)
   },
 
   // Builtins
 
   BuiltinOneArg(
-    _lpar: TerminalNode,
+    lpar: TerminalNode,
     expr: Node,
     arg: Node,
     _rpar: TerminalNode,
   ): any {
     // TODO: validate `expr` to be in allowed set of operators
-    return new ast.BuiltinOneArgExpr(
-      expr.sourceString as any,
-      arg['expr'](),
+    return withLocations(
+      new ast.BuiltinOneArgExpr(
+        expr.sourceString as any,
+        arg['expr'](),
+      ),
+      lpar,
     )
   },
 
   BuiltinZeroArgs(expr: Node): any {
     // TODO: validate `expr` to be in allowed set of operators
-    return new ast.BuiltinZeroArgs(expr.sourceString as any)
+    return withLocations(
+      new ast.BuiltinZeroArgs(expr.sourceString as any),
+      expr,
+    )
   },
 
   // Base rules
 
   identifier(start: Node, rest: IterationNode): any {
-    return new ast.NameExpr(start.sourceString + rest.sourceString)
+    return withLocations(
+      new ast.NameExpr(start.sourceString + rest.sourceString),
+      start,
+    )
   },
 
   number(node: TerminalNode): any {
-    return new ast.NumberExpr(parseInt(node.sourceString))
+    return withLocations(
+      new ast.NumberExpr(parseInt(node.sourceString)),
+      node,
+    )
   },
 
   // Helpers
 
-  Parens(_lpar: TerminalNode, node: Node, _rpar: TerminalNode): any {
+  Parens(lpar: TerminalNode, node: Node, _rpar: TerminalNode): any {
     // Just drop `()` around an expression, it should be fine
-    return node['expr']()
+    return withLocations(node['expr'](), lpar)
   },
 }
 
@@ -269,15 +323,23 @@ function parseMath(
 
   if (opsSigns.length === 0) {
     // This is not a math expr, just the left part
-    return leftExpr
+    return withLocations(leftExpr, left)
   }
 
-  let expr = new ast.MathExpr(leftExpr, opsSigns[0] as any, rightExprs[0])
+  // We always use the left part for all the math expressions,
+  // it should be fine for now.
+  let expr = withLocations(
+    new ast.MathExpr(leftExpr, opsSigns[0] as any, rightExprs[0]),
+    left,
+  )
   for (let index = 1; index < opsSigns.length; index++) {
-    expr = new ast.MathExpr(
-      expr,
-      opsSigns[index] as any, // validated earlier
-      rightExprs[index],
+    expr = withLocations(
+      new ast.MathExpr(
+        expr,
+        opsSigns[index] as any, // validated earlier
+        rightExprs[index],
+      ),
+      left,
     )
   }
 

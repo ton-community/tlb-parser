@@ -9,6 +9,7 @@ interface OneLinerTestCase {
   code: string
   error: string | undefined
   errorStart: string | undefined
+  result: string | undefined
   skip: boolean
 }
 

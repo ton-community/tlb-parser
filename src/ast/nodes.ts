@@ -5,14 +5,23 @@ export abstract class ASTRootBase {
   // We define `parent` while building the tree
   // in the intermediate represtantation.
   readonly parent!: ASTBase | null
+
+  // Node locations, start with `{ 1, 1 }`
+  readonly locations!: {
+    readonly line: number,
+    readonly column: number,
+  }
+
+  // Attributes of this node, required for `walk` function, don't use directly.
+  static readonly _attributes: string[] = []
 }
 
 export abstract class ASTBase extends ASTRootBase {
-  // TODO: set parents
   override readonly parent!: ASTBase
 }
 
 export class Program extends ASTRootBase {
+  static override readonly _attributes: string[] = ['declarations']
   override readonly parent: null = null
 
   constructor(
@@ -23,8 +32,12 @@ export class Program extends ASTRootBase {
 }
 
 export class Declaration extends ASTBase {
+  static override readonly _attributes: string[] = [
+    'constructorDef', 'fields', 'combinator',
+  ]
+
   constructor(
-    readonly contructor: Constructor,
+    readonly constructorDef: Constructor,
     readonly fields: FieldDefinition[],
     readonly combinator: Combinator,
   ) {
@@ -72,6 +85,8 @@ export class FieldBuiltinDef extends Field {
 }
 
 export class FieldCurlyExprDef extends Field {
+  static override readonly _attributes: string[] = ['expr']
+
   constructor(
     readonly expr: Expression,
   ) {
@@ -82,6 +97,8 @@ export class FieldCurlyExprDef extends Field {
 // TODO: I am not sure that `name` is allowed. Maybe it can only be `_`
 // See https://github.com/ton-blockchain/ton/issues/540
 export class FieldAnonymousDef extends Field {
+  static override readonly _attributes: string[] = ['fields']
+
   constructor(
     readonly name: string | null,
     readonly isRef: boolean,
@@ -92,6 +109,8 @@ export class FieldAnonymousDef extends Field {
 }
 
 export class FieldNamedDef extends Field {
+  static override readonly _attributes: string[] = ['expr']
+
   constructor(
     readonly name: string,
     readonly expr: CondExpr | TypeExpr,
@@ -101,6 +120,8 @@ export class FieldNamedDef extends Field {
 }
 
 export class FieldExprDef extends Field {
+  static override readonly _attributes: string[] = ['expr']
+
   constructor(
     readonly expr: CondExpr,
   ) {
@@ -112,6 +133,8 @@ export class FieldExprDef extends Field {
 // -----------
 
 export class Combinator extends ASTBase {
+  static override readonly _attributes: string[] = ['args']
+
   constructor(
     readonly name: string,
     readonly args: TypeExpr[],
@@ -127,6 +150,8 @@ export abstract class Expression extends ASTBase {}
 
 // TODO: add validation that `dotExpr` cannot be set without `condExpr`
 export class CondExpr extends Expression {
+  static override readonly _attributes: string[] = ['left', 'condExpr']
+
   constructor(
     readonly left: TypeExpr,
     readonly dotExpr: number | null,
@@ -139,6 +164,8 @@ export class CondExpr extends Expression {
 export const CompareOperator = ['<=', '>=', '!=', '=', '<', '>'] as const
 
 export class CompareExpr extends Expression {
+  static override readonly _attributes: string[] = ['left', 'right']
+
   constructor(
     readonly left: SimpleExpr,
     readonly op: typeof CompareOperator[number],
@@ -157,6 +184,8 @@ export type TypeExpr =
   | SimpleExpr
 
 export class CellRefExpr extends Expression {
+  static override readonly _attributes: string[] = ['expr']
+
   constructor(
     readonly expr: Expression,
   ) {
@@ -169,6 +198,8 @@ export class BuiltinExpr extends Expression {}
 export const BuiltinOneArgOperators = ['#<=', '#<', '##'] as const
 
 export class BuiltinOneArgExpr extends BuiltinExpr {
+  static override readonly _attributes: string[] = ['arg']
+
   constructor(
     readonly name: typeof BuiltinOneArgOperators[number],
     readonly arg: Reference,
@@ -188,6 +219,8 @@ export class BuiltinZeroArgs extends BuiltinExpr {
 }
 
 export class CombinatorExpr extends Expression {
+  static override readonly _attributes: string[] = ['args']
+
   constructor(
     readonly name: string,
     readonly args: TypeExpr[],
@@ -206,6 +239,8 @@ export type SimpleExpr =
 export const MathOperator = ['*', '+'] as const
 
 export class MathExpr extends Expression {
+  static override readonly _attributes: string[] = ['left', 'right']
+
   // TODO: narrower type for `left` and `right`?
   // TODO: use `SimpleExpr` and `number`?
   constructor(
@@ -218,6 +253,8 @@ export class MathExpr extends Expression {
 }
 
 export class NegateExpr extends Expression {
+  static override readonly _attributes: string[] = ['expr']
+
   constructor(
     readonly expr: Expression,
   ) {

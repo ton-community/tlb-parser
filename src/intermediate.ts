@@ -1,7 +1,8 @@
 import type { Grammar } from 'ohm-js'
 import ohm from 'ohm-js'
 
-import type { Program } from './ast'
+import type { Program } from './ast/nodes'
+import { withParents } from './ast/parents'
 import grammar from './grammar/tlb'
 import {
   constructorNodes,
@@ -24,5 +25,6 @@ export function buildAST(input: string, grammar: Grammar): Program {
   semantics.addOperation('expr', exprNodes)
 
   const matchResult = grammar.match(input)
-  return semantics(matchResult)['root']()
+  const ast = semantics(matchResult)['root']()
+  return withParents(ast)
 }

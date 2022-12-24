@@ -1,6 +1,6 @@
 import type { Grammar, MatchResult } from 'ohm-js'
 
-import type { Program } from './ast'
+import type { Program } from './ast/nodes'
 import { buildGrammar, buildAST } from './intermediate'
 
 
