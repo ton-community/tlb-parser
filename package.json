@@ -31,7 +31,7 @@
     "ohm-js": "^16.6.0"
   },
   "devDependencies": {
-    "@types/dedent": "^0.7.1",
+    "@types/dedent": "^0.7.2",
     "@types/jest": "^29.5.7",
     "@types/js-yaml": "^4.0.8",
     "dedent": "^1.5.1",
