@@ -2,7 +2,11 @@
   "name": "@toncommunity/tlb-parser",
   "version": "0.1.0",
   "description": "Parse TLB syntax into TypeScript objects",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "tlb-parser": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "test": "jest"

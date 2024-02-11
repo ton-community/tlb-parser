@@ -1,44 +1,68 @@
-// Only used for tests now, CLI will be awailable later
-// TODO: build normal CLI
+#!/usr/bin/env node
 
-import fs from 'fs'
-import util from 'util'
+import fs from 'fs';
+import util from 'util';
+import {ast, NodeVisitor, ASTRootBase} from './index';
 
-import { ast } from './index'
+if (process.argv[2] === '--help' || process.argv[2] === '-h' || process.argv[2] === 'help') {
+  help();
+  process.exit(0);
+}
+
+const inputPath = process.argv[2];
+if (!inputPath) {
+  console.error('No input file');
+  help();
+  process.exit(1);
+}
+
+if (!fs.existsSync(inputPath)) {
+  console.error('Input file does not exist');
+  process.exit(1);
+}
 
 const input = fs.readFileSync(
-  process.argv[2] as string,
+  inputPath,
   'utf-8',
-)
+);
 
-import { NodeVisitor } from './ast/visit'
-import * as nodes from './ast/nodes'
 class TestVisitor extends NodeVisitor {
-  public visited: {[key: string]: number}
+  public visited: { [key: string]: number };
 
   constructor() {
-    super()
-    this.visited = {}
+    super();
+    this.visited = {};
   }
 
-  override genericVisit(node: nodes.ASTRootBase): void {
+  override genericVisit(node: ASTRootBase): void {
     if (this.visited[node.constructor.name] === undefined) {
-      this.visited[node.constructor.name] = 0
+      this.visited[node.constructor.name] = 0;
     }
 
-    this.visited[node.constructor.name] += 1
-    return super.genericVisit(node)
+    this.visited[node.constructor.name] += 1;
+    return super.genericVisit(node);
   }
 }
 
-const tree = ast(input)
-const visitor = new TestVisitor()
-visitor.visit(tree)
-console.log(JSON.stringify(visitor.visited, null, 2))
+const tree = ast(input);
+const visitor = new TestVisitor();
+visitor.visit(tree);
+
+console.log(
+  util.inspect(
+    visitor.visited,
+    {showHidden: false, depth: null, colors: true},
+  ),
+);
 
 console.log(
   util.inspect(
     tree,
-    { showHidden: false, depth: null, colors: true },
+    {showHidden: false, depth: null, colors: true},
   ),
-)
+);
+
+function help() {
+  console.log('Usage: tlb-parser <input>');
+  console.log('  input: input file');
+}

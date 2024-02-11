@@ -3,7 +3,6 @@ import type { Grammar, MatchResult } from 'ohm-js'
 import type { Program } from './ast/nodes'
 import { buildGrammar, buildAST } from './intermediate'
 
-
 export function parse (
   input: string,
   grammar: Grammar | undefined = undefined,
@@ -18,3 +17,33 @@ export function parse (
 export function ast (input: string): Program {
   return buildAST(input, buildGrammar())
 }
+
+export {NodeVisitor} from './ast/visit';
+
+export {
+  ASTRootBase,
+  ASTBase,
+  Program,
+  Declaration,
+  Constructor,
+  Field,
+  FieldBuiltinDef,
+  FieldCurlyExprDef,
+  FieldAnonymousDef,
+  FieldNamedDef,
+  FieldExprDef,
+  Combinator,
+  Expression,
+  CondExpr,
+  CompareExpr,
+  CellRefExpr,
+  BuiltinExpr,
+  BuiltinOneArgExpr,
+  BuiltinZeroArgs,
+  CombinatorExpr,
+  MathExpr,
+  NegateExpr,
+  RefExpr,
+  NameExpr,
+  NumberExpr,
+} from './ast/nodes'

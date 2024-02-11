@@ -8,16 +8,60 @@ npm install @toncommunity/tlb-parser
 
 ## Usage
 
+Create a file with TLB scheme according to the [documentation](https://docs.ton.org/develop/data-formats/tl-b-language). This is an example of such a file (call it `example.tlb`):
+```
+t$_ x:# y:(uint 5) = A;
+```
+
+Then do:
+```bash
+npx tlb-parser example.tlb
+```
+
+Or you can use the tool from inside JS or TS code.
+
 ```typescript
-import { parse } from "@toncommunity/tlb-parser"
+import { ast, NodeVisitor, ASTRootBase } from "@toncommunity/tlb-parser";
+
+class TestVisitor extends NodeVisitor {
+  public visited: { [key: string]: number };
+
+  constructor() {
+    super();
+    this.visited = {};
+  }
+
+  override genericVisit(node: nodes.ASTRootBase): void {
+    if (this.visited[node.constructor.name] === undefined) {
+      this.visited[node.constructor.name] = 0;
+    }
+
+    this.visited[node.constructor.name] += 1;
+    return super.genericVisit(node);
+  }
+}
 
 const scheme = `
 t$_ x:# y:(uint 5) = A;
-`
+`;
 
-const ast = parse(scheme)
+const tree = ast(scheme);
+const visitor = new TestVisitor();
+visitor.visit(tree);
 
-console.log(ast)
+console.log(
+  util.inspect(
+    visitor.visited,
+    {showHidden: false, depth: null, colors: true},
+  ),
+);
+
+console.log(
+  util.inspect(
+    tree,
+    {showHidden: false, depth: null, colors: true},
+  ),
+);
 ```
 
 ## Related
