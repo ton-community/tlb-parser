@@ -57,7 +57,8 @@ TLB {
 
   // Constructors
   // ~~~~~~~~~~~~
-  Constructor = ("_" | identifier) ConstructorTag?
+  Constructor = ConstructorStart ConstructorTag?
+  ConstructorStart = "!"? ("_" | identifier)
   ConstructorTag =
   	| "$" ("_" | binaryDigit+)  -- binary
     | "#" ("_" | hex)           -- hex
