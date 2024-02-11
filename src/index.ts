@@ -46,4 +46,13 @@ export {
   RefExpr,
   NameExpr,
   NumberExpr,
+  FieldDefinition,
+  TypeExpr,
+  SimpleExpr,
+  Reference,
+  FieldBuiltinType,
+  CompareOperator,
+  BuiltinOneArgOperators,
+  BuiltinZeroArgsOperators,
+  MathOperator,
 } from './ast/nodes'
