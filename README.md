@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-npm install @toncommunity/tlb-parser
+npm install @ton-community/tlb-parser
 ```
 
 ## Usage
@@ -21,7 +21,7 @@ npx tlb-parser example.tlb
 Or you can use the tool from inside JS or TS code.
 
 ```typescript
-import { ast, NodeVisitor, ASTRootBase } from "@toncommunity/tlb-parser";
+import { ast, NodeVisitor, ASTRootBase } from "@ton-community/tlb-parser";
 
 class TestVisitor extends NodeVisitor {
   public visited: { [key: string]: number };

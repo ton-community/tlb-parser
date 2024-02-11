@@ -1,5 +1,5 @@
 {
-  "name": "@toncommunity/tlb-parser",
+  "name": "@ton-community/tlb-parser",
   "version": "0.1.1",
   "description": "Parse TLB syntax into TypeScript objects",
   "main": "./dist/index.js",
