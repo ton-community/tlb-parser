@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/ton-community/tlb-parser#readme",
   "dependencies": {
-    "ohm-js": "^16.6.0"
+    "ohm-js": "^17.1.0"
   },
   "devDependencies": {
     "@types/dedent": "^0.7.2",
