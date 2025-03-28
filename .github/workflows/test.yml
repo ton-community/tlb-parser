@@ -12,8 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['14.x', '16.x', '18.x', '20.x']
-
+        node-version:
+          - '18.x'
+          - '20.x'
+          - '22.x'
+          - '23.x'
+          - '24.x'
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -23,3 +27,5 @@ jobs:
       run: npm ci && npm run build
     - name: test
       run: npm test
+    - name: build
+      run: npm run build
