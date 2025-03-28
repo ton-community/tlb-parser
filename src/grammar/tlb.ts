@@ -31,7 +31,7 @@ TLB {
   // Data types
   binaryDigit = "0" | "1"
   decimalDigit = "0".."9"
-  hex = hexChar*
+  hex = hexChar* "_"?
   hexChar = decimalDigit | letter
 
   // Identifiers
