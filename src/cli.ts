@@ -35,11 +35,8 @@ class TestVisitor extends NodeVisitor {
   }
 
   override genericVisit(node: ASTRootBase): void {
-    if (this.visited[node.constructor.name] === undefined) {
-      this.visited[node.constructor.name] = 0;
-    }
-
-    this.visited[node.constructor.name] += 1;
+    const key = node.constructor.name;
+    this.visited[key] = (this.visited[key] ?? 0) + 1;
     return super.genericVisit(node);
   }
 }
