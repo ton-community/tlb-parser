@@ -13,7 +13,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: the-ton-tech/toolchain/reward@v1.3.0
+      - uses: the-ton-tech/toolchain/reward@v1.4.0
         with:
           activity_id: tl-b
           on_reward_label: rewarded
