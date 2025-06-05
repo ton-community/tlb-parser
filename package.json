@@ -7,7 +7,10 @@
   "bin": {
     "tlb-parser": "./dist/cli.js"
   },
+  "prettier": "@ton/toolchain/prettier",
   "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --max-warnings 0 --fix",
     "build": "tsc --project tsconfig.build.json",
     "test": "jest"
   },
@@ -35,6 +38,7 @@
     "ohm-js": "^16.6.0"
   },
   "devDependencies": {
+    "@ton/toolchain": "github:the-ton-tech/toolchain#v1.4.0",
     "@types/dedent": "^0.7.2",
     "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",

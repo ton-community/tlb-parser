@@ -1,49 +1,50 @@
-import { ASTRootBase } from './nodes'
+import { ASTRootBase } from './nodes';
 
-export function* iterChildNodes(
-  node: ASTRootBase,
-): IterableIterator<ASTRootBase> {
-  const type = Object.getPrototypeOf(node).constructor
-  for (let attributeName of type._attributes) {
-    // @ts-ignore
-    const attribute = node[attributeName]
+type AttrMap = Record<string, ASTRootBase | ASTRootBase[] | undefined>;
 
-    if (attribute instanceof Array) {
-      for (let arrayItem of attribute) {
-        if (arrayItem instanceof ASTRootBase) {
-          yield arrayItem
+export function* iterChildNodes(node: ASTRootBase): IterableIterator<ASTRootBase> {
+    const item = Object.getPrototypeOf(node).constructor as typeof ASTRootBase & {
+        _attributes: string[];
+    };
+
+    for (const attributeName of item._attributes) {
+        const raw = (node as unknown as AttrMap)[attributeName];
+
+        if (Array.isArray(raw)) {
+            for (const child of raw) {
+                yield child;
+            }
+        } else if (raw instanceof ASTRootBase) {
+            yield raw;
         }
-      }
-    } else if (attribute instanceof ASTRootBase) {
-      yield attribute
     }
-  }
 }
 
 export function* walk(node: ASTRootBase): IterableIterator<ASTRootBase> {
-  const todo = [node]
-  while (todo.length > 0) {
-    const current = todo.shift()!
-    todo.push(...iterChildNodes(current))
-    yield current
-  }
+    const todo = [node];
+    while (todo.length > 0) {
+        const current = todo.shift()!;
+        todo.push(...iterChildNodes(current));
+        yield current;
+    }
 }
 
 export class NodeVisitor {
-  visit(node: ASTRootBase): any {
-    const name = node.constructor.name
-    // @ts-ignore
-    const handler = this[`visit${name}`]
-    if (handler === undefined) {
-      return this.genericVisit(node)
-    } else {
-      return handler(node)
-    }
-  }
+    visit(node: ASTRootBase): unknown {
+        const constructorName = node.constructor.name;
+        const handlerName = `visit${constructorName}` as keyof this;
+        const handler = this[handlerName];
 
-  genericVisit(node: ASTRootBase): void {
-    for (let attribute of iterChildNodes(node)) {
-      this.visit(attribute)
+        if (typeof handler === 'function') {
+            return (handler as (n: ASTRootBase) => unknown).call(this, node);
+        } else {
+            return this.genericVisit(node);
+        }
     }
-  }
+
+    genericVisit(node: ASTRootBase): void {
+        for (let attribute of iterChildNodes(node)) {
+            this.visit(attribute);
+        }
+    }
 }

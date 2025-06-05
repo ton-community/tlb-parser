@@ -163,6 +163,6 @@ TLB {
   // Generic rule to allow parens around some expressions:
   Parens<expr> = "(" expr ")"
 }
-`
+`;
 
-export default grammar
+export default grammar;
