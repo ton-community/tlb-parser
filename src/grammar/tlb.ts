@@ -135,7 +135,7 @@ TLB {
 
   // TypeExpr's items:
   CellRefExpr = "^" ( CellRefInner | Parens<CellRefInner> )
-  CellRefInner = CombinatorExpr | identifier
+  CellRefInner = TypeExpr
 
   BuiltinExpr = BuiltinOneArg | BuiltinZeroArgs
   // This needs extra 'Parens' because of '(##)' expr:

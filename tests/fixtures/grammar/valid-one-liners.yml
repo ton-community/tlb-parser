@@ -91,3 +91,13 @@
     hex_max#ffffffff = HexMax;
     hex_incomplete#ffffffff_ = HexIncomplete;
     to_do_calc = ToDoCalc;
+
+- case: nat as reference
+  code: |
+    _ c:^(## 32) = A;
+
+- case: any types as reference
+  code: |
+    _ a:^(uint256) b:^(int256) c:^(## 32)  = C;
+    _ a:^Cell b:^Any c:^(bits256) d:^C = B;
+    _ a:^# b:^(#< 5) c:^(#<= 10) d:^B = A;
