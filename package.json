@@ -43,9 +43,9 @@
     "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "dedent": "^1.5.3",
-    "jest": "^30.0.4",
+    "jest": "^30.0.5",
     "js-yaml": "^4.1.0",
-    "ts-jest": "^29.3.0",
-    "typescript": "^5.8.2"
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.9.2"
   }
 }
