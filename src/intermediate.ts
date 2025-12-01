@@ -1,5 +1,5 @@
 import type { Grammar } from 'ohm-js';
-import ohm from 'ohm-js';
+import * as ohm from 'ohm-js';
 
 import type { Program } from './ast/nodes';
 import { withParents } from './ast/parents';
