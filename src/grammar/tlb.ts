@@ -139,7 +139,7 @@ TLB {
 
   BuiltinExpr = BuiltinOneArg | BuiltinZeroArgs
   // This needs extra 'Parens' because of '(##)' expr:
-  BuiltinOneArg = "(" ( builtins_one_arg | Parens<builtins_one_arg> ) RefExpr ")"
+  BuiltinOneArg = ( builtins_one_arg | Parens<builtins_one_arg> ) SimpleExpr
   BuiltinZeroArgs = builtins_zero_args
 
   // It is different from 'Combinator' only in the quantity part:
@@ -153,7 +153,7 @@ TLB {
     | Parens<SimpleExpr>
 
   NegateExpr = "~" SimpleExpr
-  RefExpr = RefInner | Parens<RefInner>
+  RefExpr = RefInner | Parens<RefInner> | FieldAnonRef | BuiltinExpr
   RefInner = identifier | number
 
 

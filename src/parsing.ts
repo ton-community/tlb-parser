@@ -212,10 +212,10 @@ export const exprNodes = {
     // Builtins
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    BuiltinOneArg(lpar: TerminalNode, expr: Node, arg: Node, _rpar: TerminalNode): any {
+    BuiltinOneArg(expr: Node, arg: Node): any {
         // TODO: validate `expr` to be in allowed set of operators
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return withLocations(new ast.BuiltinOneArgExpr(expr.sourceString as any, arg['expr']()), lpar);
+        return withLocations(new ast.BuiltinOneArgExpr(expr.sourceString as any, arg['expr']()), expr);
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -243,6 +243,17 @@ export const exprNodes = {
     Parens(lpar: TerminalNode, node: Node, _rpar: TerminalNode): any {
         // Just drop `()` around an expression, it should be fine
         return withLocations(node['expr'](), lpar);
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    FieldAnonRef(ref: TerminalNode, lpar: TerminalNode, fields: IterationNode, _rpar: TerminalNode): any {
+        return withLocations(
+            new ast.FieldAnonExpr(
+                fields.children.map((field: Node) => field['Field']()),
+                ref.numChildren !== 0,
+            ),
+            lpar,
+        );
     },
 };
 

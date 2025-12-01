@@ -109,6 +109,6 @@
 
 - case: parens on the left of `*`
   code: |
-    temp3 {n:#} = Temp3 (n * (2 + 1));
+    temp {n:#} = Temp (n * (2 + 1));
   errorStart: |
-    Line 1, col 29: expected
+    Line 1, col 27: expected

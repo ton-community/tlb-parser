@@ -1,21 +1,27 @@
 import fs from 'fs';
 import path from 'path';
 
-import { parse } from '../src';
+import { ast, parse, Program } from '../src';
 import { loadYamlCases } from './loaders/yaml';
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
 const maybe = (condition: boolean) => (condition ? test : test.skip);
+const loadSchema = (name: string) => fs.readFileSync(path.resolve(fixturesDir, 'tlb', name), 'utf-8');
 
 describe('parsing into intermediate representation using grammar', () => {
-    test('block.tlb can be parsed', () => {
-        expect.hasAssertions();
-
-        const input = fs.readFileSync(path.resolve(fixturesDir, 'tlb', 'block.tlb'), 'utf-8');
-        const parsed = parse(input);
-
+    test.each(['block.tlb', 'boc.tlb'])('%s can be parsed', (name: string) => {
+        const parsed = parse(loadSchema(name));
         expect(parsed.shortMessage).toBe(undefined);
         expect(parsed.succeeded()).toBe(true);
+    });
+
+    test.each([
+        ['block.tlb', 376],
+        ['boc.tlb', 7],
+    ])('%s can be build ast', (name: string, declarations: number) => {
+        const tree = ast(loadSchema(name));
+        expect(tree).toBeInstanceOf(Program);
+        expect(tree.declarations.length).toEqual(declarations);
     });
 
     for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'invalid-one-liners.yml')) {

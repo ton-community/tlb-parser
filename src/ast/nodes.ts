@@ -238,8 +238,6 @@ export class NegateExpr extends Expression {
 
 export class RefExpr extends Expression {}
 
-export type Reference = NameExpr | NumberExpr;
-
 export class NameExpr extends RefExpr {
     constructor(readonly name: string) {
         super();
@@ -251,3 +249,16 @@ export class NumberExpr extends RefExpr {
         super();
     }
 }
+
+export class FieldAnonExpr extends RefExpr {
+    static override readonly _attributes: string[] = ['fields'];
+
+    constructor(
+        readonly fields: FieldDefinition[],
+        readonly isRef: boolean,
+    ) {
+        super();
+    }
+}
+
+export type Reference = NameExpr | NumberExpr | FieldAnonExpr | BuiltinExpr;

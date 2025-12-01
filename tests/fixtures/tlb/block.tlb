@@ -1,3 +1,4 @@
+// https://github.com/ton-blockchain/ton/raw/37f10de155f9fb51037c048a8e3d3d94ef91b6cc/crypto/block/block.tlb
 unit$_ = Unit;
 true$_ = True;
 // EMPTY False;
@@ -114,6 +115,9 @@ var_uint$_ {n:#} len:(#< n) value:(uint (len * 8))
 var_int$_ {n:#} len:(#< n) value:(int (len * 8))
         = VarInteger n;
 nanograms$_ amount:(VarUInteger 16) = Grams;
+
+_ grams:Grams = Coins;
+
 //
 extra_currencies$_ dict:(HashmapE 32 (VarUInteger 32))
                  = ExtraCurrencyCollection;
@@ -122,7 +126,7 @@ currencies$_ grams:Grams other:ExtraCurrencyCollection
 //
 int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
   src:MsgAddressInt dest:MsgAddressInt
-  value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
+  value:CurrencyCollection extra_flags:(VarUInteger 16) fwd_fee:Grams
   created_lt:uint64 created_at:uint32 = CommonMsgInfo;
 ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt
   import_fee:Grams = CommonMsgInfo;
@@ -131,16 +135,21 @@ ext_out_msg_info$11 src:MsgAddressInt dest:MsgAddressExt
 
 int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
   src:MsgAddress dest:MsgAddressInt
-  value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
+  value:CurrencyCollection extra_flags:(VarUInteger 16) fwd_fee:Grams
   created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
 ext_out_msg_info$11 src:MsgAddress dest:MsgAddressExt
   created_lt:uint64 created_at:uint32 = CommonMsgInfoRelaxed;
 
 tick_tock$_ tick:Bool tock:Bool = TickTock;
 
-_ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
+_ fixed_prefix_length:(Maybe (## 5)) special:(Maybe TickTock)
   code:(Maybe ^Cell) data:(Maybe ^Cell)
-  library:(HashmapE 256 SimpleLib) = StateInit;
+  library:(Maybe ^Cell) = StateInit;
+
+// StateInitWithLibs is used to validate sent and received messages
+_ fixed_prefix_length:(Maybe (## 5)) special:(Maybe TickTock)
+  code:(Maybe ^Cell) data:(Maybe ^Cell)
+  library:(HashmapE 256 SimpleLib) = StateInitWithLibs;
 
 simple_lib$_ public:Bool root:^Cell = SimpleLib;
 
@@ -154,6 +163,16 @@ message$_ {X:Type} info:CommonMsgInfoRelaxed
 
 _ (Message Any) = MessageAny;
 
+
+_ value:CurrencyCollection created_lt:uint64 created_at:uint32 = NewBounceOriginalInfo;
+_ gas_used:uint32 vm_steps:uint32 = NewBounceComputePhaseInfo;
+new_bounce_body#fffffffe
+    original_body:^Cell
+    original_info:^NewBounceOriginalInfo
+    bounced_by_phase:uint8 exit_code:int32
+    compute_phase:(Maybe NewBounceComputePhaseInfo)
+    = NewBounceBody;
+
 //
 interm_addr_regular$0 use_dest_bits:(#<= 96)
   = IntermediateAddress;
@@ -164,6 +183,12 @@ interm_addr_ext$11 workchain_id:int32 addr_pfx:uint64
 msg_envelope#4 cur_addr:IntermediateAddress
   next_addr:IntermediateAddress fwd_fee_remaining:Grams
   msg:^(Message Any) = MsgEnvelope;
+msg_metadata#0 depth:uint32 initiator_addr:MsgAddressInt initiator_lt:uint64 = MsgMetadata;
+msg_envelope_v2#5 cur_addr:IntermediateAddress
+  next_addr:IntermediateAddress fwd_fee_remaining:Grams
+  msg:^(Message Any)
+  emitted_lt:(Maybe uint64)
+  metadata:(Maybe MsgMetadata) = MsgEnvelope;
 //
 msg_import_ext$000 msg:^(Message Any) transaction:^Transaction
               = InMsg;
@@ -179,6 +204,9 @@ msg_discard_fin$110 in_msg:^MsgEnvelope transaction_id:uint64
     fwd_fee:Grams = InMsg;
 msg_discard_tr$111 in_msg:^MsgEnvelope transaction_id:uint64
     fwd_fee:Grams proof_delivered:^Cell = InMsg;
+msg_import_deferred_fin$00100 in_msg:^MsgEnvelope
+    transaction:^Transaction fwd_fee:Grams = InMsg;
+msg_import_deferred_tr$00101 in_msg:^MsgEnvelope out_msg:^MsgEnvelope = InMsg;
 //
 import_fees$_ fees_collected:Grams
   value_imported:CurrencyCollection = ImportFees;
@@ -202,6 +230,10 @@ msg_export_tr_req$111 out_msg:^MsgEnvelope
     imported:^InMsg = OutMsg;
 msg_export_deq_imm$100 out_msg:^MsgEnvelope
     reimport:^InMsg = OutMsg;
+msg_export_new_defer$10100 out_msg:^MsgEnvelope
+    transaction:^Transaction = OutMsg;
+msg_export_deferred_tr$10101  out_msg:^MsgEnvelope
+    imported:^InMsg = OutMsg;
 
 _ enqueued_lt:uint64 out_msg:^MsgEnvelope = EnqueuedMsg;
 
@@ -216,16 +248,22 @@ _ (HashmapE 96 ProcessedUpto) = ProcessedInfo;
 ihr_pending$_ import_lt:uint64 = IhrPendingSince;
 _ (HashmapE 320 IhrPendingSince) = IhrPendingInfo;
 
+// key - created_lt
+_ messages:(HashmapE 64 EnqueuedMsg) count:uint48 = AccountDispatchQueue;
+// key - sender address, aug - min created_lt
+_ (HashmapAugE 256 AccountDispatchQueue uint64) = DispatchQueue;
+
+out_msg_queue_extra#0 dispatch_queue:DispatchQueue out_queue_size:(Maybe uint48) = OutMsgQueueExtra;
+
 _ out_queue:OutMsgQueue proc_info:ProcessedInfo
-  ihr_pending:IhrPendingInfo = OutMsgQueueInfo;
-//
-storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7)
-  public_cells:(VarUInteger 7) = StorageUsed;
+  extra:(Maybe OutMsgQueueExtra) = OutMsgQueueInfo;
 
-storage_used_short$_ cells:(VarUInteger 7)
-  bits:(VarUInteger 7) = StorageUsedShort;
+storage_extra_none$000 = StorageExtraInfo;
+storage_extra_info$001 dict_hash:uint256 = StorageExtraInfo;
 
-storage_info$_ used:StorageUsed last_paid:uint32
+storage_used$_ cells:(VarUInteger 7) bits:(VarUInteger 7) = StorageUsed;
+
+storage_info$_ used:StorageUsed storage_extra:StorageExtraInfo last_paid:uint32
               due_payment:(Maybe Grams) = StorageInfo;
 
 account_none$0 = Account;
@@ -245,14 +283,6 @@ acc_state_frozen$01 = AccountStatus;
 acc_state_active$10 = AccountStatus;
 acc_state_nonexist$11 = AccountStatus;
 
-/* duplicates
-tick_tock$_ tick:Bool tock:Bool = TickTock;
-
-_ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
-  code:(Maybe ^Cell) data:(Maybe ^Cell)
-  library:(Maybe ^Cell) = StateInit;
-*/
-
 account_descr$_ account:^Account last_trans_hash:bits256
   last_trans_lt:uint64 = ShardAccount;
 
@@ -268,11 +298,11 @@ transaction$0111 account_addr:bits256 lt:uint64
   total_fees:CurrencyCollection state_update:^(HASH_UPDATE Account)
   description:^TransactionDescr = Transaction;
 
-merkle_update#02 {X:Type} old_hash:bits256 new_hash:bits256
+!merkle_update#04 {X:Type} old_hash:bits256 new_hash:bits256 old_depth:uint16 new_depth:uint16
   old:^X new:^X = MERKLE_UPDATE X;
 update_hashes#72 {X:Type} old_hash:bits256 new_hash:bits256
   = HASH_UPDATE X;
-merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
+!merkle_proof#03 {X:Type} virtual_hash:bits256 depth:uint16 virtual_root:^X = MERKLE_PROOF X;
 
 acc_trans#5 account_addr:bits256
             transactions:(HashmapAug 64 ^Transaction CurrencyCollection)
@@ -306,19 +336,20 @@ tr_phase_compute_vm$1 success:Bool msg_state_used:Bool
 cskip_no_state$00 = ComputeSkipReason;
 cskip_bad_state$01 = ComputeSkipReason;
 cskip_no_gas$10 = ComputeSkipReason;
+cskip_suspended$110 = ComputeSkipReason;
 
 tr_phase_action$_ success:Bool valid:Bool no_funds:Bool
   status_change:AccStatusChange
   total_fwd_fees:(Maybe Grams) total_action_fees:(Maybe Grams)
   result_code:int32 result_arg:(Maybe int32) tot_actions:uint16
   spec_actions:uint16 skipped_actions:uint16 msgs_created:uint16
-  action_list_hash:bits256 tot_msg_size:StorageUsedShort
+  action_list_hash:bits256 tot_msg_size:StorageUsed
   = TrActionPhase;
 
 tr_phase_bounce_negfunds$00 = TrBouncePhase;
-tr_phase_bounce_nofunds$01 msg_size:StorageUsedShort
+tr_phase_bounce_nofunds$01 msg_size:StorageUsed
   req_fwd_fees:Grams = TrBouncePhase;
-tr_phase_bounce_ok$1 msg_size:StorageUsedShort
+tr_phase_bounce_ok$1 msg_size:StorageUsed
   msg_fees:Grams fwd_fees:Grams = TrBouncePhase;
 //
 trans_ord$0000 credit_first:Bool
@@ -362,7 +393,7 @@ trans_merge_install$0111 split_info:SplitMergeInfo
 smc_info#076ef1ea actions:uint16 msgs_sent:uint16
   unixtime:uint32 block_lt:uint64 trans_lt:uint64
   rand_seed:bits256 balance_remaining:CurrencyCollection
-  myself:MsgAddressInt = SmartContractInfo;
+  myself:MsgAddressInt global_config:(Maybe Cell) = SmartContractInfo;
 //
 //
 out_list_empty$_ = OutList 0;
@@ -375,7 +406,7 @@ action_reserve_currency#36e6b809 mode:(## 8)
   currency:CurrencyCollection = OutAction;
 libref_hash$0 lib_hash:bits256 = LibRef;
 libref_ref$1 library:^Cell = LibRef;
-action_change_library#26fa1dd4 mode:(## 7) { mode <= 2 }
+action_change_library#26fa1dd4 mode:(## 7)
   libref:LibRef = OutAction;
 
 out_list_node$_ prev:^Cell action:OutAction = OutListNode;
@@ -451,11 +482,24 @@ block_extra in_msg_descr:^InMsgDescr
   created_by:bits256
   custom:(Maybe ^McBlockExtra) = BlockExtra;
 //
-value_flow ^[ from_prev_blk:CurrencyCollection
+value_flow#b8e48dfb ^[ from_prev_blk:CurrencyCollection
   to_next_blk:CurrencyCollection
   imported:CurrencyCollection
   exported:CurrencyCollection ]
   fees_collected:CurrencyCollection
+  ^[
+  fees_imported:CurrencyCollection
+  recovered:CurrencyCollection
+  created:CurrencyCollection
+  minted:CurrencyCollection
+  ] = ValueFlow;
+
+value_flow_v2#3ebf98b7 ^[ from_prev_blk:CurrencyCollection
+  to_next_blk:CurrencyCollection
+  imported:CurrencyCollection
+  exported:CurrencyCollection ]
+  fees_collected:CurrencyCollection
+  burned:CurrencyCollection
   ^[
   fees_imported:CurrencyCollection
   recovered:CurrencyCollection
@@ -574,7 +618,7 @@ masterchain_block_extra#cca5
 validator#53 public_key:SigPubKey weight:uint64 = ValidatorDescr;
 validator_addr#73 public_key:SigPubKey weight:uint64 adnl_addr:bits256 = ValidatorDescr;
 validators#11 utime_since:uint32 utime_until:uint32
-  total:((##) 16) main:(## 16) { main <= total } { main >= 1 }
+  total:(## 16) main:(## 16) { main <= total } { main >= 1 }
   list:(Hashmap 16 ValidatorDescr) = ValidatorSet;
 validators_ext#12 utime_since:uint32 utime_until:uint32
   total:(## 16) main:(## 16) { main <= total } { main >= 1 }
@@ -585,6 +629,11 @@ _ elector_addr:bits256 = ConfigParam 1;
 _ minter_addr:bits256 = ConfigParam 2;  // ConfigParam 0 is used if absent
 _ fee_collector_addr:bits256 = ConfigParam 3;  // ConfigParam 1 is used if absent
 _ dns_root_addr:bits256 = ConfigParam 4;  // root TON DNS resolver
+
+burning_config#01
+  blackhole_addr:(Maybe bits256)
+  fee_burn_num:# fee_burn_denom:# { fee_burn_num <= fee_burn_denom } { fee_burn_denom >= 1 } = BurningConfig;
+_ BurningConfig = ConfigParam 5;
 
 _ mint_new_price:Grams mint_add_price:Grams = ConfigParam 6;
 _ to_mint:ExtraCurrencyCollection = ConfigParam 7;
@@ -611,13 +660,28 @@ wfmt_ext#0 min_addr_len:(## 12) max_addr_len:(## 12) addr_len_step:(## 12)
   workchain_type_id:(## 32) { workchain_type_id >= 1 }
   = WorkchainFormat 0;
 
-workchain#a6 enabled_since:uint32 actual_min_split:(## 8)
-  min_split:(## 8) max_split:(## 8) { actual_min_split <= min_split }
+wc_split_merge_timings#0
+  split_merge_delay:uint32 split_merge_interval:uint32
+  min_split_merge_interval:uint32 max_split_merge_delay:uint32
+  = WcSplitMergeTimings;
+
 //workchain#a5 enabled_since:uint32 min_split:(## 8) max_split:(## 8)
 //  { min_split <= max_split } { max_split <= 60 }
+
+workchain#a6 enabled_since:uint32 monitor_min_split:(## 8)
+  min_split:(## 8) max_split:(## 8) { monitor_min_split <= min_split }
   basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) { flags = 0 }
   zerostate_root_hash:bits256 zerostate_file_hash:bits256
   version:uint32 format:(WorkchainFormat basic)
+  = WorkchainDescr;
+
+workchain_v2#a7 enabled_since:uint32 monitor_min_split:(## 8)
+  min_split:(## 8) max_split:(## 8) { monitor_min_split <= min_split }
+  basic:(## 1) active:Bool accept_msgs:Bool flags:(## 13) { flags = 0 }
+  zerostate_root_hash:bits256 zerostate_file_hash:bits256
+  version:uint32 format:(WorkchainFormat basic)
+  split_merge_timings:WcSplitMergeTimings
+  persistent_state_split_depth:(## 8) { persistent_state_split_depth <= 63 }
   = WorkchainDescr;
 
 _ workchains:(HashmapE 32 WorkchainDescr) = ConfigParam 12;
@@ -645,6 +709,8 @@ _#cc utime_since:uint32 bit_price_ps:uint64 cell_price_ps:uint64
   mc_bit_price_ps:uint64 mc_cell_price_ps:uint64 = StoragePrices;
 _ (Hashmap 32 StoragePrices) = ConfigParam 18;
 
+_ global_id:int32 = ConfigParam 19;
+
 gas_prices#dd gas_price:uint64 gas_limit:uint64 gas_credit:uint64
   block_gas_limit:uint64 freeze_due_limit:uint64 delete_due_limit:uint64
   = GasLimitsPrices;
@@ -661,7 +727,11 @@ config_gas_prices#_ GasLimitsPrices = ConfigParam 21;
 
 param_limits#c3 underload:# soft_limit:# { underload <= soft_limit }
   hard_limit:# { soft_limit <= hard_limit } = ParamLimits;
+imported_msg_queue_limits#d3 max_bytes:# max_msgs:# = ImportedMsgQueueLimits;
 block_limits#5d bytes:ParamLimits gas:ParamLimits lt_delta:ParamLimits
+  = BlockLimits;
+block_limits_v2#5e bytes:ParamLimits gas:ParamLimits lt_delta:ParamLimits
+  collated_data:ParamLimits imported_msg_queue:ImportedMsgQueueLimits
   = BlockLimits;
 
 config_mc_block_limits#_ BlockLimits = ConfigParam 22;
@@ -734,10 +804,41 @@ misbehaviour_punishment_config_v1#01
    = MisbehaviourPunishmentConfig;
 _ MisbehaviourPunishmentConfig = ConfigParam 40;
 
+size_limits_config#01 max_msg_bits:uint32 max_msg_cells:uint32 max_library_cells:uint32 max_vm_data_depth:uint16
+  max_ext_msg_size:uint32 max_ext_msg_depth:uint16 = SizeLimitsConfig;
+size_limits_config_v2#02 max_msg_bits:uint32 max_msg_cells:uint32 max_library_cells:uint32 max_vm_data_depth:uint16
+  max_ext_msg_size:uint32 max_ext_msg_depth:uint16 max_acc_state_cells:uint32 max_mc_acc_state_cells:uint32
+  max_acc_public_libraries:uint32 defer_out_queue_size_limit:uint32 max_msg_extra_currencies:uint32
+  max_acc_fixed_prefix_length:uint8 acc_state_cells_for_storage_dict:uint32 = SizeLimitsConfig;
+_ SizeLimitsConfig = ConfigParam 43;
+
+// key is [ wc:int32 addr:uint256 ]
+suspended_address_list#00 addresses:(HashmapE 288 Unit) suspended_until:uint32 = SuspendedAddressList;
+_ SuspendedAddressList = ConfigParam 44;
+
+precompiled_smc#b0 gas_usage:uint64 = PrecompiledSmc;
+precompiled_contracts_config#c0 list:(HashmapE 256 PrecompiledSmc) = PrecompiledContractsConfig;
+_ PrecompiledContractsConfig = ConfigParam 45;
+
 oracle_bridge_params#_ bridge_address:bits256 oracle_mutlisig_address:bits256 oracles:(HashmapE 256 uint256) external_chain_address:bits256 = OracleBridgeParams;
 _ OracleBridgeParams = ConfigParam 71; // Ethereum bridge
 _ OracleBridgeParams = ConfigParam 72; // Binance Smart Chain bridge
 _ OracleBridgeParams = ConfigParam 73; // Polygon bridge
+
+// Note that chains in which bridge, minter and jetton-wallet operate are fixated
+jetton_bridge_prices#_ bridge_burn_fee:Coins bridge_mint_fee:Coins
+                       wallet_min_tons_for_storage:Coins
+                       wallet_gas_consumption:Coins
+                       minter_min_tons_for_storage:Coins
+                       discover_gas_consumption:Coins = JettonBridgePrices;
+
+jetton_bridge_params_v0#00 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 burn_bridge_fee:Coins = JettonBridgeParams;
+jetton_bridge_params_v1#01 bridge_address:bits256 oracles_address:bits256 oracles:(HashmapE 256 uint256) state_flags:uint8 prices:^JettonBridgePrices external_chain_address:bits256 = JettonBridgeParams;
+
+_ JettonBridgeParams = ConfigParam 79; // ETH->TON token bridge
+_ JettonBridgeParams = ConfigParam 81; // BNB->TON token bridge
+_ JettonBridgeParams = ConfigParam 82; // Polygon->TON token bridge
+
 
 //
 //  PROOFS
@@ -756,6 +857,7 @@ top_block_descr#d5 proof_for:BlockIdExt signatures:(Maybe ^BlockSignatures)
 //  COLLATED DATA
 //
 top_block_descr_set#4ac789f3 collection:(HashmapE 96 ^TopBlockDescr) = TopBlockDescrSet;
+account_storage_dict_proof#37c1e3fc proof:^Cell = AccountStorageDictProof;
 
 //
 //  VALIDATOR MISBEHAVIOR COMPLAINTS
@@ -814,7 +916,7 @@ vmc_pushint$1111 value:int32 next:^VmCont = VmCont;
 //
 //  DNS RECORDS
 //
-_ (HashmapE 256 DNSRecord) = DNS_RecordSet;
+_ (HashmapE 256 ^DNSRecord) = DNS_RecordSet;
 
 chunk_ref$_ {n:#} ref:^(TextChunks (n + 1)) = TextChunkRef (n + 1);
 chunk_ref_empty$_ = TextChunkRef 0;
@@ -839,6 +941,8 @@ cap_method_seqno#5371 = SmcCapability;
 cap_method_pubkey#71f4 = SmcCapability;
 cap_is_wallet#2177 = SmcCapability;
 cap_name#ff name:Text = SmcCapability;
+
+dns_storage_address#7473 bag_id:bits256 = DNSRecord;
 
 //
 // PAYMENT CHANNELS

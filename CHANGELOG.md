@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+### Fixed
+
+- Fix tl-b grammar to support case from block.tlb and boc.tlb
+
 ### Chore
 
 - Upgrade ohm-js to v17.2.1
