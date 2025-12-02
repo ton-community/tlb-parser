@@ -118,3 +118,9 @@
     _ l:(## 7) { l <= 127 } v:(bits l * 8) = A;
   errorStart: |
     Line 1, col 35: expected
+
+- case: cannot use a non-Nat field in an expression
+  code: |
+    _ v:int7 { v <= 127 } = A;
+  errorValidate: |
+    cannot use field 'v' in an expression unless it is either an integer or a type

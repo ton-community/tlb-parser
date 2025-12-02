@@ -105,3 +105,10 @@
 - case: math expressions
   code: |
     _ l:(## 7) { l <= 127 } v:(bits (l * 8)) = A;
+
+- case: use a Nat field in an expression
+  code: |
+    _ v:(## 7) { v <= 127 } = A;
+    _ n:(#< 32) { n >= 1 } = B n;
+    _ n:(#<= 32) { n >= 1 } = C n;
+    _ {n:#} { n >= 1 } = D n;

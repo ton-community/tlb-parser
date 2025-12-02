@@ -24,29 +24,41 @@ describe('parsing into intermediate representation using grammar', () => {
         expect(tree.declarations.length).toEqual(declarations);
     });
 
-    for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'invalid-one-liners.yml')) {
-        maybe(!caseDef.skip)(`Generated invalid example: ${caseDef.case}`, () => {
-            expect.hasAssertions();
+    describe('invalid grammar', () => {
+        for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'invalid-one-liners.yml')) {
+            maybe(!caseDef.skip)(`${caseDef.case} - can not be parsed valid`, () => {
+                expect.hasAssertions();
 
-            const parsed = parse(caseDef.code);
+                const parsed = parse(caseDef.code);
 
-            if (caseDef.error !== undefined) {
-                expect(parsed.shortMessage).toEqual(caseDef.error);
-            } else if (caseDef.errorStart !== undefined) {
-                expect(parsed.shortMessage).toMatch(caseDef.errorStart);
-            }
-            expect(parsed.succeeded()).toBe(false);
-        });
-    }
+                if (caseDef.error !== undefined) {
+                    expect(parsed.shortMessage).toEqual(caseDef.error);
+                } else if (caseDef.errorStart !== undefined) {
+                    expect(parsed.shortMessage).toMatch(caseDef.errorStart);
+                }
 
-    for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'valid-one-liners.yml')) {
-        test(`Generated valid example: ${caseDef.case}`, () => {
-            expect.hasAssertions();
+                if (caseDef.errorValidate !== undefined) {
+                    expect(parsed.succeeded()).toBe(true);
+                    expect(() => ast(caseDef.code)).toThrow(caseDef.errorValidate);
+                } else {
+                    expect(parsed.succeeded()).toBe(false);
+                }
+            });
+        }
+    });
 
-            const parsed = parse(caseDef.code);
-
-            expect(parsed.shortMessage).toBe(undefined);
-            expect(parsed.succeeded()).toBe(true);
-        });
-    }
+    describe('valid grammar', () => {
+        for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'valid-one-liners.yml')) {
+            test(`${caseDef.case} - can be parsed valid`, () => {
+                const parsed = parse(caseDef.code);
+                expect(parsed.shortMessage).toBe(undefined);
+                expect(parsed.succeeded()).toBe(true);
+            });
+            test(`${caseDef.case} - can be build ast valid`, () => {
+                const tree = ast(caseDef.code);
+                expect(tree).toBeInstanceOf(Program);
+                expect(tree.declarations.length).toBeGreaterThan(0);
+            });
+        }
+    });
 });

@@ -9,6 +9,7 @@ interface OneLinerTestCase {
     code: string;
     error: string | undefined;
     errorStart: string | undefined;
+    errorValidate: string | undefined;
     result: string | undefined;
     skip: boolean;
 }
@@ -22,6 +23,7 @@ export function loadYamlCases(...pathParts: string[]): OneLinerTestCase[] {
             code: dedent(caseDef.code),
             error: caseDef.error !== undefined ? dedent(caseDef.error) : undefined,
             errorStart: caseDef.errorStart !== undefined ? dedent(caseDef.errorStart) : undefined,
+            errorValidate: caseDef.errorValidate !== undefined ? dedent(caseDef.errorValidate) : undefined,
         };
     });
 }
