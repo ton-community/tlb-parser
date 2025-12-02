@@ -144,13 +144,25 @@ TLB {
 
   // It is different from 'Combinator' only in the quantity part:
   // we always need at least one argument here and it can be complex.
-  CombinatorExpr = "(" identifier TypeExpr+ ")"
+  CombinatorExpr = "(" identifier CombinatorArg+ ")"
 
   SimpleExpr =
     | NegateExpr
     | MathExpr
     | RefExpr
     | Parens<SimpleExpr>
+
+  SimpleExprNoMath =
+    | NegateExpr
+    | RefExpr
+    | Parens<SimpleExpr>
+
+  CombinatorArg =
+    | CellRefExpr
+    | BuiltinExpr
+    | CombinatorExpr
+    | SimpleExprNoMath
+    | Parens<TypeExpr>
 
   NegateExpr = "~" SimpleExpr
   RefExpr = RefInner | Parens<RefInner> | FieldAnonRef | BuiltinExpr

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Fix tl-b grammar to support case from block.tlb and boc.tlb
+- Fix tl-b grammar to support math expressions [issues #121](https://github.com/ton-community/tlb-parser/issues/121)
 
 ### Chore
 

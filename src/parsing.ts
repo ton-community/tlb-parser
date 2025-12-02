@@ -255,6 +255,16 @@ export const exprNodes = {
             lpar,
         );
     },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    CombinatorArg(node: Node): any {
+        return node['expr']();
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    SimpleExprNoMath(node: Node): any {
+        return node['expr']();
+    },
 };
 
 function parseMath(left: Node, ops: IterationNode, rights: IterationNode): ast.Expression {

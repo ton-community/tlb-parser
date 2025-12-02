@@ -112,3 +112,9 @@
     temp {n:#} = Temp (n * (2 + 1));
   errorStart: |
     Line 1, col 27: expected
+
+- case: cannot apply operator to type
+  code: |
+    _ l:(## 7) { l <= 127 } v:(bits l * 8) = A;
+  errorStart: |
+    Line 1, col 35: expected

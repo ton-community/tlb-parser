@@ -101,3 +101,7 @@
     _ a:^(uint256) b:^(int256) c:^(## 32)  = C;
     _ a:^Cell b:^Any c:^(bits256) d:^C = B;
     _ a:^# b:^(#< 5) c:^(#<= 10) d:^B = A;
+
+- case: math expressions
+  code: |
+    _ l:(## 7) { l <= 127 } v:(bits (l * 8)) = A;
