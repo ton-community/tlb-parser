@@ -1,12 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import { ast, parse, walk, Program, ASTBase, ASTRootBase } from '../src';
+import { loadAstCases, loadGrammarCases, loadSchema } from './util/load';
+import { TestVisitor } from './util/TestVisitor';
 
-import { ast, parse, Program } from '../src';
-import { loadYamlCases } from './loaders/yaml';
-
-const fixturesDir = path.resolve(__dirname, 'fixtures');
 const maybe = (condition: boolean) => (condition ? test : test.skip);
-const loadSchema = (name: string) => fs.readFileSync(path.resolve(fixturesDir, 'tlb', name), 'utf-8');
 
 describe('parsing into intermediate representation using grammar', () => {
     test.each(['block.tlb', 'boc.tlb'])('%s can be parsed', (name: string) => {
@@ -24,8 +20,27 @@ describe('parsing into intermediate representation using grammar', () => {
         expect(tree.declarations.length).toEqual(declarations);
     });
 
+    test.each([
+        ['block.tlb', 19],
+        ['boc.tlb', 18],
+    ])('%s can be visited and walk parents', (name: string, visited: number) => {
+        const tree = ast(loadSchema(name));
+        expect(tree).toBeInstanceOf(Program);
+        const visitor = new TestVisitor();
+        visitor.visit(tree);
+        expect(visitor.visited.size).toEqual(visited);
+        for (let node of walk(tree)) {
+            if (node instanceof Program) {
+                expect(node.parent).toBe(null);
+            } else {
+                expect(node).toBeInstanceOf(ASTBase);
+                expect(node.parent).toBeInstanceOf(ASTRootBase);
+            }
+        }
+    });
+
     describe('invalid grammar', () => {
-        for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'invalid-one-liners.yml')) {
+        for (let caseDef of loadGrammarCases('invalid-one-liners.yml')) {
             maybe(!caseDef.skip)(`${caseDef.case} - can not be parsed valid`, () => {
                 expect.hasAssertions();
 
@@ -48,7 +63,7 @@ describe('parsing into intermediate representation using grammar', () => {
     });
 
     describe('valid grammar', () => {
-        for (let caseDef of loadYamlCases(fixturesDir, 'grammar', 'valid-one-liners.yml')) {
+        for (let caseDef of loadGrammarCases('valid-one-liners.yml')) {
             test(`${caseDef.case} - can be parsed valid`, () => {
                 const parsed = parse(caseDef.code);
                 expect(parsed.shortMessage).toBe(undefined);
@@ -58,6 +73,33 @@ describe('parsing into intermediate representation using grammar', () => {
                 const tree = ast(caseDef.code);
                 expect(tree).toBeInstanceOf(Program);
                 expect(tree.declarations.length).toBeGreaterThan(0);
+            });
+        }
+    });
+
+    describe('node visitor', () => {
+        for (let caseDef of loadAstCases('visit.yml')) {
+            test(`Generated visit example: ${caseDef.case}`, () => {
+                expect.hasAssertions();
+
+                const visitor = new TestVisitor();
+                visitor.visit(ast(caseDef.code));
+
+                const expected = Object.entries(JSON.parse(caseDef.result!));
+                expect(visitor.visited).toEqual(new Map(expected));
+            });
+        }
+    });
+
+    describe('ast examples', () => {
+        for (let caseDef of loadAstCases('examples.yml')) {
+            test(`Generated ast example: ${caseDef.case}`, () => {
+                expect.hasAssertions();
+
+                const tree = ast(caseDef.code);
+
+                expect(tree).toBeInstanceOf(Program);
+                expect(tree).toMatchSnapshot();
             });
         }
     });

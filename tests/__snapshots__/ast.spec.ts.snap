@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ast cell as ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 14,
+          "line": 1,
+        },
+        "name": "T",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "_",
+        "parent": [Circular],
+        "tag": null,
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": CellRefExpr {
+            "expr": NameExpr {
+              "locations": {
+                "column": 7,
+                "line": 1,
+              },
+              "name": "Cell",
+              "parent": [Circular],
+            },
+            "locations": {
+              "column": 6,
+              "line": 1,
+            },
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 3,
+            "line": 1,
+          },
+          "name": "c",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;
+
+exports[`ast cell no ref 1`] = `
+Program {
+  "declarations": [
+    Declaration {
+      "combinator": Combinator {
+        "args": [],
+        "locations": {
+          "column": 13,
+          "line": 1,
+        },
+        "name": "T",
+        "parent": [Circular],
+      },
+      "constructorDef": Constructor {
+        "locations": {
+          "column": 1,
+          "line": 1,
+        },
+        "name": "_",
+        "parent": [Circular],
+        "tag": null,
+      },
+      "fields": [
+        FieldNamedDef {
+          "expr": NameExpr {
+            "locations": {
+              "column": 6,
+              "line": 1,
+            },
+            "name": "Cell",
+            "parent": [Circular],
+          },
+          "locations": {
+            "column": 3,
+            "line": 1,
+          },
+          "name": "c",
+          "parent": [Circular],
+        },
+      ],
+      "locations": {
+        "column": 1,
+        "line": 1,
+      },
+      "parent": [Circular],
+    },
+  ],
+  "locations": {
+    "column": 1,
+    "line": 1,
+  },
+  "parent": null,
+}
+`;

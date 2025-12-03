@@ -18,7 +18,7 @@ export function ast(input: string): Program {
     return program;
 }
 
-export { NodeVisitor } from './ast/visit';
+export { NodeVisitor, walk } from './ast/visit';
 
 export {
     ASTRootBase,

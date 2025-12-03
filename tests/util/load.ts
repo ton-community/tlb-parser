@@ -27,3 +27,17 @@ export function loadYamlCases(...pathParts: string[]): OneLinerTestCase[] {
         };
     });
 }
+
+const fixturesDir = path.resolve(__dirname, '..', 'fixtures');
+
+export function loadAstCases(name: string) {
+    return loadYamlCases(fixturesDir, 'ast', name);
+}
+
+export function loadGrammarCases(name: string) {
+    return loadYamlCases(fixturesDir, 'grammar', name);
+}
+
+export function loadSchema(name: string) {
+    return fs.readFileSync(path.resolve(fixturesDir, 'tlb', name), 'utf-8');
+}
