@@ -279,9 +279,7 @@ function parseMath(left: Node, ops: IterationNode, rights: IterationNode): ast.E
     const rightExprs = [];
     for (let child of rights.children) {
         const rightExpr = child['expr']();
-        if (rightExpr !== undefined) {
-            rightExprs.push(rightExpr);
-        }
+        rightExprs.push(rightExpr);
     }
 
     if (opsSigns.length !== rightExprs.length) {

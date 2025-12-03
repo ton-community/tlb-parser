@@ -8,10 +8,13 @@ const config: Config = {
     silent: false,
     coverageThreshold: {
         global: {
-            statements: 98.13,
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
         },
     },
-    coveragePathIgnorePatterns: ['tests/'],
+    coveragePathIgnorePatterns: ['tests/', 'src/index.ts'],
 };
 
 export default config;

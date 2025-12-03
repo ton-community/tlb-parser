@@ -1,12 +1,14 @@
 import { ast, parse, walk, Program, ASTBase, ASTRootBase } from '../src';
 import { loadAstCases, loadGrammarCases, loadSchema } from './util/load';
 import { TestVisitor } from './util/TestVisitor';
+import { buildGrammar } from '../src/intermediate';
 
+const grammar = buildGrammar();
 const maybe = (condition: boolean) => (condition ? test : test.skip);
 
 describe('parsing into intermediate representation using grammar', () => {
     test.each(['block.tlb', 'boc.tlb'])('%s can be parsed', (name: string) => {
-        const parsed = parse(loadSchema(name));
+        const parsed = parse(loadSchema(name), grammar);
         expect(parsed.shortMessage).toBe(undefined);
         expect(parsed.succeeded()).toBe(true);
     });
