@@ -23,6 +23,8 @@ import { isNatField } from '../src/validation';
 
 describe('edge cases', () => {
     test.each([
+        ['_ n:(## 2) c:(n * Cell) = X;', null],
+        ['_ n:(## 2) c:(n * ^Cell) = X;', null],
         ['_ x:# = X;', null],
         ['test$10 = Test;', 'binary' as const],
         ['test#0a = Test;', 'hex' as const],

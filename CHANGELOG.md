@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fix tl-b grammar to support case from block.tlb and boc.tlb
 - Fix tl-b grammar to support math expressions [issues #121](https://github.com/ton-community/tlb-parser/issues/121)
 - Fix tl-b grammar use a Nat field in an expression [issues #120](https://github.com/ton-community/tlb-parser/issues/120)
+- Fix tl-b grammar can use ref in expression
 
 ### Chore
 

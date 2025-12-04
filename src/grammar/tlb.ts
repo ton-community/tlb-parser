@@ -165,7 +165,7 @@ TLB {
     | Parens<TypeExpr>
 
   NegateExpr = "~" SimpleExpr
-  RefExpr = RefInner | Parens<RefInner> | FieldAnonRef | BuiltinExpr
+  RefExpr = RefInner | Parens<RefInner> | FieldAnonRef | BuiltinExpr | CellRefExpr
   RefInner = identifier | number
 
 
