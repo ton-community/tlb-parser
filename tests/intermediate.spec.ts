@@ -1,4 +1,4 @@
-import { ast, parse, walk, Program, ASTBase, ASTRootBase } from '../src';
+import { ast, parse, walk, Program, ASTBase, ASTRootBase, counterASTNodes } from '../src';
 import { loadAstCases, loadGrammarCases, loadSchema } from './util/load';
 import { TestVisitor } from './util/TestVisitor';
 import { buildGrammar } from '../src/intermediate';
@@ -14,12 +14,14 @@ describe('parsing into intermediate representation using grammar', () => {
     });
 
     test.each([
-        ['block.tlb', 376],
-        ['boc.tlb', 7],
-    ])('%s can be build ast', (name: string, declarations: number) => {
+        ['block.tlb', 376, 4136],
+        ['boc.tlb', 7, 260],
+    ])('%s can be build ast', (name: string, declarations: number, ASTNodes: number) => {
         const tree = ast(loadSchema(name));
+        const counter = counterASTNodes(tree);
         expect(tree).toBeInstanceOf(Program);
         expect(tree.declarations.length).toEqual(declarations);
+        expect(counter.total).toEqual(ASTNodes);
     });
 
     test.each([

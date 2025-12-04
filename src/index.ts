@@ -1,4 +1,4 @@
-export { parse, ast } from './lib';
+export { parse, ast, counterASTNodes } from './lib';
 export { NodeVisitor, walk } from './ast/visit';
 export {
     ASTRootBase,
