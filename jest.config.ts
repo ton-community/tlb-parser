@@ -15,6 +15,7 @@ const config: Config = {
         },
     },
     coveragePathIgnorePatterns: ['tests/', 'src/index.ts'],
+    coverageReporters: ['json-summary', 'text', 'lcov'],
 };
 
 export default config;
