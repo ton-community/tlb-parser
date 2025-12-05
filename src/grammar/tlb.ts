@@ -37,7 +37,7 @@ TLB {
   // Identifiers
   identifier = identifierStart identifierPart*
   identifierStart = "_" | letter
-  identifierPart = identifierStart | digit
+  identifierPart = identifierStart | digit | ","
 
   // Primitives
   number = digit+

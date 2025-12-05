@@ -25,7 +25,7 @@ export const rootNodes = {
 export const constructorNodes = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Constructor(name: TerminalNode, tag: Node): any {
-        const nameValue = name.sourceString;
+        const nameValue = name.sourceString.replace(/,/g, '_');
         let tagValue = null;
 
         if (tag.numChildren !== 0) {

@@ -7,13 +7,14 @@ const grammar = buildGrammar();
 const maybe = (condition: boolean) => (condition ? test : test.skip);
 
 describe('parsing into intermediate representation using grammar', () => {
-    test.each(['block.tlb', 'boc.tlb'])('%s can be parsed', (name: string) => {
+    test.each(['schemes.tlb', 'block.tlb', 'boc.tlb'])('%s can be parsed', (name: string) => {
         const parsed = parse(loadSchema(name), grammar);
         expect(parsed.shortMessage).toBe(undefined);
         expect(parsed.succeeded()).toBe(true);
     });
 
     test.each([
+        ['schemes.tlb', 903, 9799],
         ['block.tlb', 376, 4136],
         ['boc.tlb', 7, 260],
     ])('%s can be build ast', (name: string, declarations: number, ASTNodes: number) => {
@@ -25,6 +26,7 @@ describe('parsing into intermediate representation using grammar', () => {
     });
 
     test.each([
+        ['schemes.tlb', 20],
         ['block.tlb', 19],
         ['boc.tlb', 18],
     ])('%s can be visited and walk parents', (name: string, visited: number) => {

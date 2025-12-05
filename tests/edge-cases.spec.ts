@@ -23,19 +23,22 @@ import { isNatField } from '../src/validation';
 
 describe('edge cases', () => {
     test.each([
-        ['_ n:(## 2) c:(n * Cell) = X;', null],
-        ['_ n:(## 2) c:(n * ^Cell) = X;', null],
-        ['_ x:# = X;', null],
-        ['test$10 = Test;', 'binary' as const],
-        ['test#0a = Test;', 'hex' as const],
-        ['test = Test;', null],
-        ['_ {n:#} = X (n + 1 + 2);', null],
-        ['_ {n:#} l:(## (n * 2 * 4)) = X;', null],
-    ])('parse & ast: %s', (schema: string, tagType: 'binary' | 'hex' | null) => {
+        ['a,b#00000001 = Ab;', 'hex', 'a_b'],
+        ['_ n:(## 2) c:(n * Cell) = X;', null, '_'],
+        ['_ n:(## 2) c:(n * ^Cell) = X;', null, '_'],
+        ['_ x:# = X;', null, '_'],
+        ['test$10 = Test;', 'binary', 'test'],
+        ['test#0a = Test;', 'hex', 'test'],
+        ['test = Test;', null, 'test'],
+        ['_ {n:#} = X (n + 1 + 2);', null, '_'],
+        ['_ {n:#} l:(## (n * 2 * 4)) = X;', null, '_'],
+    ])('parse & ast: %s', (schema: string, tagType: string | null, constName: string) => {
         expect(parse(schema).succeeded()).toBe(true);
         const tree = ast(schema);
         expect(tree).toBeInstanceOf(Program);
-        expect(tree.declarations[0]!.constructorDef.getTagType()).toBe(tagType);
+        const declaration = tree.declarations[0]!;
+        expect(declaration.constructorDef.name).toBe(constName);
+        expect(declaration.constructorDef.getTagType()).toBe(tagType);
     });
 
     test('withParents handles all cases', () => {
