@@ -25,7 +25,7 @@ export const rootNodes = {
 export const constructorNodes = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Constructor(name: TerminalNode, tag: Node): any {
-        const nameValue = name.sourceString;
+        const nameValue = name.sourceString.replace(/,/g, '_');
         let tagValue = null;
 
         if (tag.numChildren !== 0) {
@@ -279,9 +279,7 @@ function parseMath(left: Node, ops: IterationNode, rights: IterationNode): ast.E
     const rightExprs = [];
     for (let child of rights.children) {
         const rightExpr = child['expr']();
-        if (rightExpr !== undefined) {
-            rightExprs.push(rightExpr);
-        }
+        rightExprs.push(rightExpr);
     }
 
     if (opsSigns.length !== rightExprs.length) {

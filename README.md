@@ -1,5 +1,8 @@
 # tlb-parser
 
+[![npm @ton-community/tlb-parser version](https://img.shields.io/npm/v/@ton-community/tlb-parser)](https://www.npmjs.com/package/@ton-community/tlb-parser)
+[![qa](https://github.com/ton-community/tlb-parser/actions/workflows/qa.yml/badge.svg)](https://github.com/ton-community/tlb-parser/actions/workflows/qa.yml)
+
 ## Installation
 
 ```bash

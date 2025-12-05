@@ -35,5 +35,7 @@
 
     "skipLibCheck": true
   },
-  "exclude": ["dist/*/**"],
+  "include": [
+    "src/**/*"
+  ]
 }

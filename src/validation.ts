@@ -48,7 +48,7 @@ function getFieldName(field: FieldDefinition): string | null {
     return null;
 }
 
-function isNatField(field: FieldDefinition): boolean {
+export function isNatField(field: FieldDefinition): boolean {
     if (field instanceof FieldBuiltinDef) {
         return field.type === '#';
     }

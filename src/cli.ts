@@ -3,7 +3,7 @@
 import fs from 'fs';
 import util from 'util';
 
-import { ast, NodeVisitor, ASTRootBase } from './index';
+import { ast, counterASTNodes } from './lib';
 
 if (process.argv[2] === '--help' || process.argv[2] === '-h' || process.argv[2] === 'help') {
     help();
@@ -25,29 +25,12 @@ if (!fs.existsSync(inputPath)) {
 }
 
 const input = fs.readFileSync(inputPath, 'utf-8');
-
-class TestVisitor extends NodeVisitor {
-    public visited: { [key: string]: number };
-
-    constructor() {
-        super();
-        this.visited = {};
-    }
-
-    override genericVisit(node: ASTRootBase): void {
-        const key = node.constructor.name;
-        this.visited[key] = (this.visited[key] ?? 0) + 1;
-        return super.genericVisit(node);
-    }
-}
-
 const tree = ast(input);
-const visitor = new TestVisitor();
-visitor.visit(tree);
-// eslint-disable-next-line no-console
-console.log(util.inspect(visitor.visited, { showHidden: false, depth: null, colors: true }));
 // eslint-disable-next-line no-console
 console.log(util.inspect(tree, { showHidden: false, depth: null, colors: true }));
+const counter = counterASTNodes(tree);
+// eslint-disable-next-line no-console
+console.log(util.inspect(counter.nodes, { showHidden: false, depth: null, colors: true }));
 
 function help() {
     // eslint-disable-next-line no-console

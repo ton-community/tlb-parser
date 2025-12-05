@@ -37,7 +37,7 @@ TLB {
   // Identifiers
   identifier = identifierStart identifierPart*
   identifierStart = "_" | letter
-  identifierPart = identifierStart | digit
+  identifierPart = identifierStart | digit | ","
 
   // Primitives
   number = digit+
@@ -165,7 +165,7 @@ TLB {
     | Parens<TypeExpr>
 
   NegateExpr = "~" SimpleExpr
-  RefExpr = RefInner | Parens<RefInner> | FieldAnonRef | BuiltinExpr
+  RefExpr = RefInner | Parens<RefInner> | FieldAnonRef | BuiltinExpr | CellRefExpr
   RefInner = identifier | number
 
 

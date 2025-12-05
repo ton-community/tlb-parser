@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`ast generation Generated ast example: Anonymous fields with cell ref 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Anonymous fields with cell ref 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -114,7 +114,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Anonymous fields with named cell ref 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Anonymous fields with named cell ref 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -228,7 +228,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Anonymous fields without cell ref 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Anonymous fields without cell ref 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -342,7 +342,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Cell ref 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Cell ref 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -430,7 +430,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Different compare nodes 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Different compare nodes 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -630,7 +630,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Math with parens 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Math with parens 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -791,7 +791,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Math without parens 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Math without parens 1`] = `
 Program {
   "declarations": [
     Declaration {
@@ -936,7 +936,7 @@ Program {
 }
 `;
 
-exports[`ast generation Generated ast example: Simple fields 1`] = `
+exports[`parsing into intermediate representation using grammar ast examples Generated ast example: Simple fields 1`] = `
 Program {
   "declarations": [
     Declaration {
